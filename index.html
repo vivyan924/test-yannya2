@@ -1,0 +1,3408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGL Sales Toolkits - Logistics Cost Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a4480;
+            --primary-dark: #0d2b54;
+            --primary-light: #2c5daa;
+            --secondary: #ff6b35;
+            --accent: #00a896;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --success: #28a745;
+            --danger: #dc3545;
+            --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+            --sidebar-width: 250px;
+            --agl-bg: #e6f7ff;
+            --tpl-bg: #e8f5e9;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Calibri, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            position: relative;
+        }
+        
+        .watermark {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.2;
+            background-image: repeating-linear-gradient(
+                -30deg,
+                transparent,
+                transparent 40px,
+                rgba(255, 0, 0, 0.1) 40px,
+                rgba(255, 0, 0, 0.1) 80px
+            );
+        }
+        
+        .watermark-text {
+            position: absolute;
+            transform: rotate(-30deg);
+            font-size: 40px;
+            color: rgba(255, 0, 0, 0.15);
+            font-weight: bold;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: var(--card-shadow);
+            z-index: 100;
+            overflow-y: auto;
+            padding: 10px 0;
+            transition: var(--transition);
+        }
+        
+        .logo-container {
+            padding: 0 20px 15px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 15px;
+        }
+        
+        .logo-en {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: var(--transition);
+        }
+        
+        .page-header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+        }
+        
+        .calculator-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: #eef2f8;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary);
+            border-radius: 6px 6px 0 0;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background: white;
+            border-radius: 0 0 6px 6px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eaeaea;
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+        
+        .panel h2 i {
+            margin-right: 10px;
+            color: var(--accent);
+            background: #f0f9ff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 15px 0 10px;
+            padding-left: 5px;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 180px;
+            padding: 15px;
+            background: #f8faff;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        
+        .input-group .description {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #dde4f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: white;
+            font-family: Calibri, sans-serif;
+        }
+        
+        select:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 68, 128, 0.1);
+            outline: none;
+        }
+        
+        .input-group-row {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .input-group-row > div {
+            flex: 1;
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 1.05rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 12px;
+            font-family: Calibri, sans-serif;
+        }
+        
+        .btn-custom {
+            background: #e9ecef;
+            color: var(--dark);
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .result-container {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #f8faff, #e6f7ff);
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid #dde8ff;
+            position: relative;
+        }
+        
+        .currency-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .result-container h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 12px 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .comparison-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .comparison-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            border: 1px solid #eef2f8;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        /* AGL方案卡片背景 */
+        .comparison-card.agl {
+            background-color: var(--agl-bg);
+        }
+        
+        /* 3PL方案卡片背景 */
+        .comparison-card.tpl {
+            background-color: var(--tpl-bg);
+        }
+        
+        .comparison-card h4 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .comparison-card .value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 8px 0;
+        }
+        
+        .comparison-card .label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .comparison-subtitle {
+            text-align: center;
+            color: var(--primary);
+            margin: 20px 0 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            background: #e8f4ff;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+            position: relative;
+        }
+        
+        .comparison-subtitle::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .scheme-tag {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .formula-breakdown {
+            background: #f1f8ff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            text-align: left;
+            border-left: 2px solid var(--primary);
+        }
+        
+        .formula-line {
+            margin-bottom: 6px;
+            padding: 4px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 3px;
+        }
+        
+        .formula-line:last-child {
+            margin-bottom: 0;
+        }
+        
+        .instructions-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+        
+        .instructions-content h3 {
+            color: var(--primary);
+            margin: 15px 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .instructions-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions-content li {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .instructions-content code {
+            background: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .instructions-content .formula {
+            background: #f1f8ff;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+            margin: 12px 0;
+            font-family: monospace;
+            font-size: 1rem;
+        }
+        
+        .file-info {
+            background: #e8f4ff;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+        
+        .file-info h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .file-info ul {
+            margin-left: 18px;
+        }
+        
+        .placeholder {
+            text-align: center;
+            padding: 40px 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .placeholder i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-light);
+        }
+        
+        .placeholder h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .placeholder p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: var(--gray);
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0 12px;
+        }
+        
+        .nav-item {
+            margin-bottom: 4px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        
+        .nav-link.active {
+            background: rgba(26, 68, 128, 0.1);
+            color: var(--primary);
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 15px 0;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 4px;
+            display: none;
+        }
+        
+        .percent-input-container {
+            position: relative;
+        }
+        
+        .percent-input-container input {
+            padding-right: 35px;
+        }
+        
+        .percent-symbol {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            pointer-events: none;
+        }
+        
+        input[disabled] {
+            background-color: #e9ecef;
+            opacity: 1;
+        }
+        
+        .weight-calculations {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        
+        .weight-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .weight-group {
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .preset-params {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .preset-params h4 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 6px;
+        }
+        
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        
+        .preset-card {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-size: 0.95rem;
+        }
+        
+        .preset-card h5 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .preset-card ul {
+            margin-left: 12px;
+        }
+        
+        .custom-params-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .custom-params-panel h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1.2rem;
+        }
+        
+        .sub-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin: 15px 0 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed var(--border);
+        }
+        
+        .sub-section-description {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .param-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+        }
+        
+        /* 3PL LCL rate参数在一行显示 */
+        #tpl-lcl-params .param-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        #tpl-lcl-params .param-grid .param-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        /* Floating navigation buttons */
+        .floating-nav {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .floating-btn {
+            background: rgba(26, 68, 128, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            opacity: 0.85;
+            text-align: center;
+        }
+        
+        .floating-btn:hover {
+            background: rgba(26, 68, 128, 1);
+            transform: translateY(-2px);
+            opacity: 1;
+        }
+        
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .contact-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .contact-link:hover {
+            text-decoration: underline;
+        }
+        
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .password-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .password-container h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .password-container input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .password-container .error {
+            color: var(--danger);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        /* For cargo detail and duty cost sections */
+        .compact-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+        }
+        
+        .compact-row .input-group {
+            min-width: 180px;
+            flex: 1 1 auto;
+        }
+        
+        /* For 3PL LCL params */
+        .compact-lcl-params {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .compact-lcl-params .param-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        /* For air freight 3PL params */
+        .air-param-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .air-param-subgroup {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .air-param-subgroup .param-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+        
+        /* FCL results layout */
+        #fcl-results-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        #fcl-results-container .comparison-card {
+            margin-bottom: 15px;
+        }
+        
+        #tpl-fcl-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        /* Air results layout */
+        #air-results-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        #tpl-air-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        /* Special cargo surcharge */
+        .special-cargo-item {
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 1200px) {
+            .comparison-results {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            #fcl-results-container, #tpl-fcl-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            #air-results-container, #tpl-air-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 60px;
+                overflow: hidden;
+            }
+            
+            .sidebar .logo-container,
+            .sidebar .nav-link span {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+                font-size: 1.1rem;
+            }
+            
+            .main-content {
+                margin-left: 60px;
+            }
+            
+            .floating-nav {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .floating-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+            
+            .compact-row {
+                flex-wrap: wrap;
+            }
+            
+            #fcl-results-container, #tpl-fcl-container {
+                grid-template-columns: 1fr;
+            }
+            
+            #air-results-container, #tpl-air-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-results {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-radius: 0;
+                text-align: center;
+            }
+            
+            .main-content {
+                padding: 12px;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+            
+            .input-group {
+                min-width: 100%;
+            }
+            
+            .input-group-row {
+                flex-direction: column;
+            }
+            
+            .floating-nav {
+                display: none;
+            }
+            
+            .currency-toggle {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+	<script src="https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js"></script>
+<script>
+  microsoftTeams.initialize();
+  // 可选：获取用户上下文
+  microsoftTeams.getContext(context => {
+    console.log("User ID:", context.userId);
+  });
+</script>
+</head>
+<body>
+    <div class="watermark">
+        <div class="watermark-text" style="top: 15%; left: 5%;">For AGL internal, do not share</div>
+        <div class="watermark-text" style="top: 35%; left: 25%;">For AGL internal, do not share</div>
+        <div class="watermark-text" style="top: 55%; left: 45%;">For AGL internal, do not share</div>
+        <div class="watermark-text" style="top: 75%; left: 65%;">For AGL internal, do not share</div>
+        <div class="watermark-text" style="top: 95%; left: 85%;">For AGL internal, do not share</div>
+    </div>
+    
+    <div class="password-modal" id="passwordModal">
+        <div class="password-container">
+            <h2><i class="fas fa-lock"></i> Access Required</h2>
+            <p>Please enter the password to access AGL Sales Toolkits</p>
+            <input type="password" id="passwordInput" placeholder="Enter password">
+            <p class="error" id="passwordError" style="display:none;">Incorrect password. Please try again.</p>
+            <button class="btn" id="passwordSubmit">
+                <i class="fas fa-unlock"></i> Unlock
+            </button>
+            <p style="margin-top: 15px; font-size: 0.85rem;">Password format: aglc + month + day (e.g. aglc1003 for October 3)</p>
+        </div>
+    </div>
+    
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo-en">AGL Sales Toolkits</div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-divider"></li>
+            <li class="nav-item">
+                <a href="#" class="nav-link active" data-page="ocean">
+                    <i class="fas fa-ship"></i>
+                    <span>Ocean Freight Cost</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="air">
+                    <i class="fas fa-plane"></i>
+                    <span>Air Freight Cost</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="knowledge">
+                    <i class="fas fa-book"></i>
+                    <span>Knowledge Center</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="course">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Training Courses</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="demo">
+                    <i class="fas fa-desktop"></i>
+                    <span>System Demo</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-content" id="ocean-page">
+            <div class="page-header">
+                <h1><i class="fas fa-ship"></i> Ocean Freight Cost AGL vs. 3PL </h1>
+            </div>
+            
+            <div class="calculator-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="calculator">Cost Comparator</div>
+                    <div class="tab" data-tab="instructions">Instructions</div>
+                </div>
+                
+                <div class="tab-content active" id="calculator-content">
+                    <div class="panel" id="parameter-settings">
+                        <h2><i class="fas fa-sliders-h"></i> Parameter Settings</h2>
+                        
+                        <div class="section-title">Cargo Detail</div>
+                        <div class="compact-row">
+                            <div class="input-group">
+                                <label>Port of Loading (POL)</label>
+                                <select id="pol">
+                                    <option value="SHANGHAI">Shanghai (SHANGHAI)</option>
+                                    <option value="NINGBO">Ningbo (NINGBO)</option>
+                                    <option value="XIAMEN">Xiamen (XIAMEN)</option>
+                                    <option value="QINGDAO">Qingdao (QINGDAO)</option>
+                                    <option value="TIANJIN">Tianjin (TIANJIN)</option>
+                                    <option value="FUZHOU">Fuzhou (FUZHOU)</option>
+                                    <option value="HONGKONG">Hong Kong (HONGKONG)</option>
+                                    <option value="ZHUHAI">Zhuhai (ZHUHAI)</option>
+                                    <option value="LIANYUNGANG">Lianyungang (LIANYUNGANG)</option>
+                                    <option value="YANTIAN" selected>Yantian/Shenzhen (YANTIAN/SHENZHEN)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Product Category & Tariff</label>
+                                <div class="input-group-row">
+                                    <div>
+                                        <select id="category">
+                                            <option value="custom" selected>Not in list</option>
+                                            <option value="gl_home-improvement LED bulbs">Home Improvement - LED bulbs (32%)</option>
+                                            <option value="gl_home-improvement Table lamps">Home Improvement - Table lamps (58.7%)</option>
+                                            <option value="gl_home-improvement Faucets">Home Improvement - Faucets (55%)</option>
+                                            <option value="gl_wireless Phone cases">Wireless - Phone cases (42.8%)</option>
+                                            <option value="gl_wireless Data cables">Wireless - Data cables (30%)</option>
+                                            <option value="gl_apparel Women's tops">Apparel - Women's tops (69.5%)</option>
+                                            <option value="gl_toy Toys">Toys - Toys (30%)</option>
+                                            <option value="gl_beauty Nail clippers">Beauty - Nail clippers (37.5%)</option>
+                                            <option value="gl_drugstore Trash bags">Drugstore - Trash bags (33%)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <div class="percent-input-container">
+                                            <input type="text" id="customTariffRate" value="30" disabled>
+                                            <span class="percent-symbol">%</span>
+                                        </div>
+                                        <div class="error-message" id="tariffError">Rate must be between 0-100</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>FCL Units</label>
+                                <input type="number" id="fclUnits" min="1" value="12000">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Shipment Volume (CBM)</label>
+                                <input type="number" id="shipmentVolume" min="0.1" step="0.1" value="50.0">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>LCL Units per CBM</label>
+                                <input type="number" id="lclUnitsPerCBM" min="1" value="500">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>LCL kg per CBM</label>
+                                <input type="number" id="lclKgPerCBM" min="1" value="350">
+                            </div>
+                        </div>
+                        
+                        <div class="section-title">Duty Cost, IB fee, Regional distribution</div>
+                        <div class="compact-row">
+                            <div class="input-group">
+                                <label>AGL Declared Value ($/unit)</label>
+                                <input type="number" id="declareValueAGL" min="0" step="0.01" value="1.0">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>3PL Declared Value ($/unit)</label>
+                                <input type="number" id="declareValue3PL" min="0" step="0.01" value="1.0">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>West IB Fee ($/unit)</label>
+                                <select id="ibFeeWest">
+                                    <option value="0.3">0.3</option>
+                                    <option value="0.34">0.34</option>
+                                    <option value="0.41">0.41</option>
+                                    <option value="0.49">0.49</option>
+                                    <option value="0.68" selected>0.68</option>
+                                    <option value="1.6">1.6</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>East IB Fee ($/unit)</label>
+                                <select id="ibFeeEast">
+                                    <option value="0.16">0.16</option>
+                                    <option value="0.18">0.18</option>
+                                    <option value="0.22">0.22</option>
+                                    <option value="0.27">0.27</option>
+                                    <option value="0.37" selected>0.37</option>
+                                    <option value="1.1">1.1</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>West Unit %</label>
+                                <input type="number" id="westUnitPercent" min="0" max="100" step="0.1" value="34.4">
+                                <div class="error-message" id="westError">Must be between 0-100</div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>East Unit %</label>
+                                <input type="number" id="eastUnitPercent" min="0" max="100" step="0.1" value="35">
+                                <div class="error-message" id="eastError">Must be between 0-100</div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Central Unit %</label>
+                                <input type="number" id="centralUnitPercent" min="0" max="100" step="0.1" value="30.6">
+                                <div class="error-message" id="centralError">Must be between 0-100</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn" id="calculateBtn">
+                            <i class="fas fa-calculator"></i> Calculate Costs with Pre-set Rates
+                        </button>
+                    </div>
+                    
+                    <div class="panel">
+                        <h2><i class="fas fa-chart-line"></i> Calculation Results</h2>
+                        
+                        <div id="resultsSection" class="hidden">
+                            <div class="result-container">
+                                <h3>Cost Comparison</h3>
+                                <button id="currencyToggle" class="currency-toggle">Switch to RMB</button>
+                                
+                                <div class="comparison-subtitle" id="fcl-results">FCL with IB fee (without duty)</div>
+                                <div id="fcl-results-container">
+                                    <div class="comparison-card agl">
+                                        <h4>AGL AMP FCL</h4>
+                                        <div class="value" id="ampFclCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = AMP FCL Fixed fee (Import Clearance) + 40HC fee</div>
+                                            <div class="formula-line">AMP FCL Fixed fee: $<span id="ampFclFixedBooking">0.00</span></div>
+                                            <div class="formula-line">AMP 40HC fee: $<span id="ampFclBooking40HC">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card agl">
+                                        <h4>AGL MSS FCL - West</h4>
+                                        <div class="value" id="aglMssFclWestCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = MSS FCL Fixed Fee (Import Clearance) + MSS 40HC fee + (Units × West IB fee)</div>
+                                            <div class="formula-line">MSS Fixed fee: $<span id="aglMssFixedWest">0.00</span></div>
+                                            <div class="formula-line">MSS 40HC fee: $<span id="aglMss40HCWest">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="aglMssIBWest">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card agl">
+                                        <h4>AGL MSS FCL - East</h4>
+                                        <div class="value" id="aglMssFclEastCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = MSS FCL Fixed Fee (Import Clearance) + MSS 40HC fee + (Units × East IB fee)</div>
+                                            <div class="formula-line">MSS Fixed fee: $<span id="aglMssFixedEast">0.00</span></div>
+                                            <div class="formula-line">MSS 40HC fee: $<span id="aglMss40HCEast">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="aglMssIBEast">0.00</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="tpl-fcl-container">
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL AOSS FCL</h4>
+                                        <div class="value" id="tplAossFclCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (3PL FCL West Rate x West Unit %) + (3PL FCL East Rate x East Unit %) + (3PL FCL Central Rate x Central Unit %)</div>
+                                            <div class="formula-line">West cost: $<span id="aossWestCost">0.00</span></div>
+                                            <div class="formula-line">East cost: $<span id="aossEastCost">0.00</span></div>
+                                            <div class="formula-line">Central cost: $<span id="aossCentralCost">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL MSS FCL - West</h4>
+                                        <div class="value" id="tplWestCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = 3PL FCL West rate + (Units × West IB fee)</div>
+                                            <div class="formula-line">3PL FCL West rate: $<span id="tplWestFixed">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="tplWestIB">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL MSS FCL - East</h4>
+                                        <div class="value" id="tplEastCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = 3PL FCL East rate + (Units × East IB fee)</div>
+                                            <div class="formula-line">3PL FCL East rate: $<span id="tplEastFixed">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="tplEastIB">0.00</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="comparison-subtitle" id="lcl-results">LCL with IB fee and duty</div>
+                                <div class="comparison-results">
+                                    <div class="comparison-card agl">
+                                        <h4>AGL AMP LCL</h4>
+                                        <div class="value" id="ampLclCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = AMP LCL Fixed fee (Import + Export Clearance) + (AMP LCL $ per CBM × Volume) + (Volume × LCL units per CBM × AGL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">AMP LCL Fixed fee: $<span id="ampLclFixed">0.00</span></div>
+                                            <div class="formula-line">AMP LCL $ per CBM total: $<span id="ampLclRate">0.00</span></div>
+                                            <div class="formula-line">Duty cost: $<span id="ampLclDuty">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card agl">
+                                        <h4>AGL SMP LCL</h4>
+                                        <div class="value" id="smpLclCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = ((SMP LCL Fixed rate (Import + Export Clearance) × 5) + (SMP LCL $ per CBM x Volume x Regional%) + (Volume × LCL units per CBM × AGL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">SMP Fixed fee: $<span id="smpFixedFee">0.00</span></div>
+                                            <div class="formula-line">West cost: $<span id="smpWestCost">0.00</span></div>
+                                            <div class="formula-line">Mid-East cost: $<span id="smpMidEastCost">0.00</span></div>
+                                            <div class="formula-line">South East cost: $<span id="smpSouthEastCost">0.00</span></div>
+                                            <div class="formula-line">North East cost: $<span id="smpNorthEastCost">0.00</span></div>
+                                            <div class="formula-line">Central cost: $<span id="smpCentralCost">0.00</span></div>
+                                            <div class="formula-line">Duty cost: $<span id="smpDuty">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card agl">
+                                        <h4>AGL MSS LCL - West</h4>
+                                        <div class="value" id="aglMssLclWestCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = MSS LCL Fixed rate (Import + Export Clearance) + (MSS $ per CBM West × Volume) + (Volume × LCL Unit per CBM x West IB fee) + (Volume × LCL units/CBM × AGL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">MSS LCL Fixed fee: $<span id="aglMssLclWestFixed">0.00</span></div>
+                                            <div class="formula-line">MSS LCL $ per CBM total: $<span id="aglMssLclWestRate">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="aglMssLclWestIB">0.00</span></div>
+                                            <div class="formula-line">Duty cost: $<span id="aglMssLclWestDuty">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card agl">
+                                        <h4>AGL MSS LCL - East</h4>
+                                        <div class="value" id="aglMssLclEastCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = MSS LCL Fixed rate (Import + Export Clearance) + (MSS $ per CBM East × Volume) + (Volume × LCL Unit per CBM × East IB fee) + (Volume × LCL units/CBM × AGL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">MSS LCL Fixed fee: $<span id="aglMssLclEastFixed">0.00</span></div>
+                                            <div class="formula-line">MSS LCL $ per CBM total: $<span id="aglMssLclEastRate">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="aglMssLclEastIB">0.00</span></div>
+                                            <div class="formula-line">Duty cost: $<span id="aglMssLclEastDuty">0.00</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="comparison-results">
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL AOSS LCL (duty incl.)</h4>
+                                        <div class="value" id="tplAossLclDutyIncluded">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = ((3PL West RMB/kg x Volume x West% x LCL kg per CBM) + (3PL East RMB/kg x Volume x East% x LCL kg per CBM) + (3PL Central RMB/kg x Volume x Central% x LCL kg per CBM))/Exchange</div>
+                                            <div class="formula-line">West cost: $<span id="aossLclWestCost">0.00</span></div>
+                                            <div class="formula-line">East cost: $<span id="aossLclEastCost">0.00</span></div>
+                                            <div class="formula-line">Central cost: $<span id="aossLclCentralCost">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL MSS LCL - West (duty incl.)</h4>
+                                        <div class="value" id="tplMssLclWestDutyIncl">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (3PL West RMB/kg x Volume x LCL kg per CBM)/Exchange + (Units × West IB fee)</div>
+                                            <div class="formula-line">Base freight: $<span id="tplMssLclWestBaseDutyIncl">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="tplMssLclWestIBDutyIncl">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL MSS LCL - East (duty incl.)</h4>
+                                        <div class="value" id="tplMssLclEastDutyIncl">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (3PL East RMB/kg x Volume x LCL kg per CBM)/Exchange + (Units × East IB fee)</div>
+                                            <div class="formula-line">Base freight: $<span id="tplMssLclEastBaseDutyIncl">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="tplMssLclEastIBDutyIncl">0.00</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="comparison-results">
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL AOSS LCL (duty excl.) + duty</h4>
+                                        <div class="value" id="tplAossLclWithoutDuty">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = ((3PL West RMB/CBM x Volume x West%) + (3PL East RMB/CBM x Volume x East%) + (3PL Central RMB/CBM x Volume x Central%))/Exchange + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">West cost: $<span id="aossLclWestCost2">0.00</span></div>
+                                            <div class="formula-line">East cost: $<span id="aossLclEastCost2">0.00</span></div>
+                                            <div class="formula-line">Central cost: $<span id="aossLclCentralCost2">0.00</span></div>
+                                            <div class="formula-line">Duty cost: $<span id="aossLclDuty">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL MSS LCL - West (duty excl.) + duty</h4>
+                                        <div class="value" id="tplMssLclWestCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (3PL West RMB/CBM × Volume)/Exchange + (Volume × LCL Unit per CBM × West IB fee) + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">Base freight: $<span id="tplMssLclWestBase">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="tplMssLclWestIB">0.00</span></div>
+                                            <div class="formula-line">Duty cost: $<span id="tplMssLclWestDuty">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL MSS LCL - East (duty excl.) + duty</h4>
+                                        <div class="value" id="tplMssLclEastCost">$0.00</div>
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (3PL East RMB/CBM × Volume)/Exchange + (Volume × LCL Unit per CBM × East IB fee) + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">Base freight: $<span id="tplMssLclEastBase">0.00</span></div>
+                                            <div class="formula-line">IB fee: $<span id="tplMssLclEastIB">0.00</span></div>
+                                            <div class="formula-line">Duty cost: $<span id="tplMssLclEastDuty">0.00</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="noResultsSection">
+                            <div class="result-container">
+                                <h3>Results will appear here</h3>
+                                <p>Please fill all parameters and click "Calculate Costs" button</p>
+                                <i class="fas fa-calculator" style="font-size: 2.5rem; color: var(--primary); margin: 15px 0;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="custom-params-panel" id="tpl-custom">
+                        <h3>3PL Rate Customization</h3>
+                        
+                        <div class="sub-section-title">3PL FCL rate</div>
+                        <div class="sub-section-description">Each Rate = origin+PTP+destination cost, duty exclusive</div>
+                        <div class="param-grid">
+                            <div class="param-item">
+                                <label>3PL FCL West Rate ($) (duty excl.)</label>
+                                <input type="number" id="customTplWestFclRate" value="3998">
+                            </div>
+                            <div class="param-item">
+                                <label>3PL FCL East Rate ($) (duty excl.)</label>
+                                <input type="number" id="customTplEastFclRate" value="7391">
+                            </div>
+                            <div class="param-item">
+                                <label>3PL FCL Central Rate ($) (duty excl.)</label>
+                                <input type="number" id="customTplCentralFclRate" value="6610">
+                            </div>
+                        </div>
+                        
+                        <div class="sub-section-title">3PL LCL rate</div>
+                        <div class="sub-section-description">Duty inclusive RMB/kg, not duty inclusive RMB/CBM, fixed cost RMB/booking</div>
+                        <div class="compact-lcl-params" id="tpl-lcl-params">
+                            <div class="param-item">
+                                <label>3PL EC RMB/kg (duty incl.)</label>
+                                <input type="number" id="customTplWestRmbPerKg" value="5.1">
+                            </div>
+                            <div class="param-item">
+                                <label>3PL EC RMB/kg (duty incl.)</label>
+                                <input type="number" id="customTplEastRmbPerKg" value="6.8">
+                            </div>
+                            <div class="param-item">
+                                <label>3PL CC RMB/kg (duty incl.)</label>
+                                <input type="number" id="customTplCentralRmbPerKg" value="6.8">
+                            </div>
+                            <div class="param-item">
+                                <label>3PL WC RMB/CBM (duty excl.)</label>
+                                <input type="number" id="customTplWestRmbPerCbm" value="789.84">
+                            </div>
+                            <div class="param-item">
+                                <label>3PL EC RMB/CBM (duty excl.)</label>
+                                <input type="number" id="customTplEastRmbPerCbm" value="980.64">
+                            </div>
+                            <div class="param-item">
+                                <label>3PL CC RMB/CBM (duty excl.)</label>
+                                <input type="number" id="customTplCentralRmbPerCbm" value="1033.2">
+                            </div>
+                        </div>
+                        
+                        <div class="sub-section-title">Other</div>
+                        <div class="param-grid">
+                            <div class="param-item">
+                                <label>Exchange Rate (USD/RMB)</label>
+                                <input type="number" id="customExchangeRate" step="0.01" value="7.2">
+                            </div>
+                        </div>
+                        
+                        <div class="param-buttons">
+                            <button class="btn btn-custom" id="applyCustomRatesBtn">
+                                <i class="fas fa-check"></i> Apply Custom Rates
+                            </button>
+                            <button class="btn btn-custom" id="resetToPresetBtn">
+                                <i class="fas fa-undo"></i> Reset to Preset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="instructions-content">
+                    <div class="instructions-content">
+                        <h3><i class="fas fa-info-circle"></i> Ocean Freight Cost Calculator Instructions</h3>
+                        
+                        <div class="file-info">
+                            <h4>AGL Rate Card Version: 7/29/2025</h4>
+                        </div>
+                        
+                        <h3>AGL FCL Rates</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dest.Region</th>
+                                    <th>Speed Mode</th>
+                                    <th>Currency</th>
+                                    <th>Product</th>
+                                    <th>FOB Status</th>
+                                    <th>POL</th>
+                                    <th>Destination Region</th>
+                                    <th>FC Type</th>
+                                    <th>Import Clearance</th>
+                                    <th>40HQ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>NINGBO</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8561</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>YANTIAN</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8504</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>SHANGHAI</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8564</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>XIAMEN</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8554</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>QINGDAO</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8555</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>TIANJIN</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8564</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>FUZHOU</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8547</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>HONGKONG</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8529</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>ZHUHAI</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8554</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>LIANYUNGANG</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>106</td>
+                                    <td>8555</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3>AGL LCL Rates</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dest.Region</th>
+                                    <th>Speed Mode</th>
+                                    <th>Currency</th>
+                                    <th>Product</th>
+                                    <th>FOB Status</th>
+                                    <th>POL</th>
+                                    <th>Destination Region</th>
+                                    <th>FC Type</th>
+                                    <th>Export Clearance</th>
+                                    <th>Import Clearance</th>
+                                    <th>1-5 CBMS</th>
+                                    <th>5-10 CBMS</th>
+                                    <th>10-15 CBMS</th>
+                                    <th>> 15 CBMS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>NINGBO</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>10.6666</td>
+                                    <td>76</td>
+                                    <td>160.9097</td>
+                                    <td>160.9097</td>
+                                    <td>160.9097</td>
+                                    <td>160.9097</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>SHANGHAI</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>13.3333</td>
+                                    <td>76</td>
+                                    <td>160.4291</td>
+                                    <td>160.4291</td>
+                                    <td>160.4291</td>
+                                    <td>160.4291</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>XIAMEN</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>17.7777</td>
+                                    <td>76</td>
+                                    <td>160.7902</td>
+                                    <td>160.7902</td>
+                                    <td>160.7902</td>
+                                    <td>160.7902</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>QINGDAO</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>20.4444</td>
+                                    <td>76</td>
+                                    <td>159.4444</td>
+                                    <td>159.4444</td>
+                                    <td>159.4444</td>
+                                    <td>159.4444</td>
+                                </tr>
+                                <tr>
+                                    <td>US</td>
+                                    <td>Standard Ocean</td>
+                                    <td>USD</td>
+                                    <td>AMP</td>
+                                    <td>non-FOB</td>
+                                    <td>SHENZHEN</td>
+                                    <td>US West</td>
+                                    <td>Sort</td>
+                                    <td>24.8888</td>
+                                    <td>76</td>
+                                    <td>162.4</td>
+                                    <td>162.4</td>
+                                    <td>162.4</td>
+                                    <td>162.4</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="preset-params">
+                            <h4>SMP Regional Distribution</h4>
+                            <div class="preset-card">
+                                <ul>
+                                    <li>West: 24.9%</li>
+                                    <li>Mid-East: 22.3%</li>
+                                    <li>South East: 16.9%</li>
+                                    <li>North East: 14.7%</li>
+                                    <li>Central: 24.9%</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <h3>How to Use</h3>
+                        <ol>
+                            <li>Fill in all required parameters in the "Parameter Settings" section.</li>
+                            <li>Click "Calculate Costs with Pre-set Rates" to see the results.</li>
+                            <li>You can customize 3PL rates in the "3PL Rate Customization" section and apply them.</li>
+                            <li>Switch between USD and RMB using the currency toggle in the results section.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="page-content" id="air-page" style="display:none;">
+            <div class="page-header">
+                <h1><i class="fas fa-plane"></i> Air Freight Cost AGL vs. 3PL </h1>
+            </div>
+            
+            <div class="calculator-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="air-calculator">Cost Comparator</div>
+                    <div class="tab" data-tab="air-instructions">Instructions</div>
+                </div>
+                
+                <div class="tab-content active" id="air-calculator-content">
+                    <div class="panel" id="parameter-settings">
+                        <h2><i class="fas fa-sliders-h"></i> Parameter Settings</h2>
+                        
+                        <div class="section-title">Cargo Detail</div>
+                        <div class="compact-row">
+                            <div class="input-group">
+                                <label>Port of Loading (POL)</label>
+                                <select id="air-pol">
+                                    <option value="HONGKONG" selected>Hong Kong (HONGKONG)</option>
+                                    <option value="SHANGHAI">Shanghai (SHANGHAI)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Product Category & Tariff</label>
+                                <div class="input-group-row">
+                                    <div>
+                                        <select id="air-category">
+                                            <option value="custom" selected>Not in list</option>
+                                            <option value="gl_home-improvement LED bulbs">Home Improvement - LED bulbs (32%)</option>
+                                            <option value="gl_home-improvement Table lamps">Home Improvement - Table lamps (58.7%)</option>
+                                            <option value="gl_home-improvement Faucets">Home Improvement - Faucets (55%)</option>
+                                            <option value="gl_wireless Phone cases">Wireless - Phone cases (42.8%)</option>
+                                            <option value="gl_wireless Data cables">Wireless - Data cables (30%)</option>
+                                            <option value="gl_apparel Women's tops">Apparel - Women's tops (69.5%)</option>
+                                            <option value="gl_toy Toys">Toys - Toys (30%)</option>
+                                            <option value="gl_beauty Nail clippers">Beauty - Nail clippers (37.5%)</option>
+                                            <option value="gl_drugstore Trash bags">Drugstore - Trash bags (33%)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <div class="percent-input-container">
+                                            <input type="text" id="air-customTariffRate" value="30" disabled>
+                                            <span class="percent-symbol">%</span>
+                                        </div>
+                                        <div class="error-message" id="air-tariffError">Rate must be between 0-100</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Incoterm</label>
+                                <select id="incoterm">
+                                    <option value="DDP" selected>DDP</option>
+                                    <option value="EXW">EXW</option>
+                                    <option value="FOB">FOB</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Units</label>
+                                <input type="number" id="units" min="1" value="5000">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Weight (KG)</label>
+                                <input type="number" id="weightKg" min="0.1" step="0.1" value="200">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Shipment Volume (CBM)</label>
+                                <input type="number" id="volumeCBM" min="0.10" step="0.01" value="2">
+                            </div>
+                        </div>
+                        
+                        <div class="section-title">Duty Cost, IB fee, Regional distribution</div>
+                        <div class="compact-row">
+                            <div class="input-group">
+                                <label>Declared Value RMB/Unit - AGL</label>
+                                <input type="number" id="declareValueAGL-air" min="0" step="0.01" value="1">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Declared Value RMB/Unit - 3PL</label>
+                                <input type="number" id="declareValue3PL-air" min="0" step="0.01" value="1">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>West IB Fee ($/unit)</label>
+                                <select id="ibFeeWest-air">
+                                    <option value="0.3">0.3</option>
+                                    <option value="0.34">0.34</option>
+                                    <option value="0.41">0.41</option>
+                                    <option value="0.49">0.49</option>
+                                    <option value="0.68" selected>0.68</option>
+                                    <option value="1.6">1.6</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>West Unit %</label>
+                                <input type="number" id="air-westUnitPercent" min="0" max="100" step="0.1" value="34.4">
+                                <div class="error-message" id="air-westError">Must be between 0-100</div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>East Unit %</label>
+                                <input type="number" id="air-eastUnitPercent" min="0" max="100" step="0.1" value="35">
+                                <div class="error-message" id="air-eastError">Must be between 0-100</div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Central Unit %</label>
+                                <input type="number" id="air-centralUnitPercent" min="0" max="100" step="0.1" value="30.6">
+                                <div class="error-message" id="air-centralError">Must be between 0-100</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-title">Calculated fields</div>
+                        <div class="weight-calculations">
+                            <div class="weight-row">
+                                <div class="weight-group">
+                                    <label>Volume weight (KG, CBM/0.006)</label>
+                                    <input type="text" id="volumeWeight" disabled value="0">
+                                </div>
+                                
+                                <div class="weight-group">
+                                    <label>Chargeable weight (KG, MAX(Weight,Volume weight))</label>
+                                    <input type="text" id="chargeableWeight" disabled value="0">
+                                </div>
+                            </div>
+                            
+                            <div class="weight-row">
+                                <div class="weight-group">
+                                    <label>Chargeable weight (WC) (KG)</label>
+                                    <input type="text" id="chargeableWeightWC" disabled value="0">
+                                </div>
+                                
+                                <div class="weight-group">
+                                    <label>Chargeable weight (EC) (KG)</label>
+                                    <input type="text" id="chargeableWeightEC" disabled value="0">
+                                </div>
+                                
+                                <div class="weight-group">
+                                    <label>Chargeable weight (CC) (KG)</label>
+                                    <input type="text" id="chargeableWeightCC" disabled value="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn" id="calculateAirBtn">
+                            <i class="fas fa-calculator"></i> Calculate Costs with Pre-set Rates
+                        </button>
+                    </div>
+                    
+                    <div class="panel">
+                        <h2><i class="fas fa-chart-line"></i> Calculation Results</h2>
+                        
+                        <div id="air-resultsSection" class="hidden">
+                            <div class="result-container">
+                                <h3>Cost Comparison (with IB fee and duty)</h3>
+                                
+                                <div id="air-results-container">
+                                    <div class="comparison-card agl">
+                                        <h4>AGL AMP</h4>
+                                        <div class="value" id="ampAirCost">¥0.00</div>
+                                        
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = [AMP Fixed Fee] + (Chargeable weight × [AMP per KG]) + (Units × Declared Value RMB/Unit - AGL × Tariff rate)</div>
+                                            <div class="formula-line">Fixed fee: ¥<span id="ampFixedFee">0.00</span></div>
+                                            <div class="formula-line">Per KG fee total: ¥<span id="ampPerKg">0.00</span></div>
+                                            <div class="formula-line">Duty cost: ¥<span id="ampDutyAir">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card agl">
+                                        <h4>AGL MSS - West</h4>
+                                        <div class="value" id="mssAirCost">¥0.00</div>
+                                        
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = [MSS Fixed Fee] + (Chargeable weight × [MSS per KG]) + (IB Fee × Units × Exchange) + (Units × Declared Value RMB/Unit - AGL × Tariff rate)</div>
+                                            <div class="formula-line">Fixed fee: ¥<span id="mssFixedFee">0.00</span></div>
+                                            <div class="formula-line">Per KG fee total: ¥<span id="mssPerKg">0.00</span></div>
+                                            <div class="formula-line">IB fee: ¥<span id="mssIBFee">0.00</span></div>
+                                            <div class="formula-line">Duty cost: ¥<span id="mssDutyAir">0.00</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="tpl-air-container">
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL AOSS cost (duty incl.)</h4>
+                                        <div class="value" id="tplAossAirCost">¥0.00</div>
+                                        
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (WC weight × WC rate) + (EC weight × EC rate) + (CC weight × CC rate) + Special cargo surcharge</div>
+                                            <div class="formula-line">WC cost: ¥<span id="aossWcCost">0.00</span></div>
+                                            <div class="formula-line">EC cost: ¥<span id="aossEcCost">0.00</span></div>
+                                            <div class="formula-line">CC cost: ¥<span id="aossCcCost">0.00</span></div>
+                                            <div class="formula-line">Special cargo surcharge: ¥<span id="aossSpecialCargo">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL MSS (duty incl.)</h4>
+                                        <div class="value" id="tplMssAirCost">¥0.00</div>
+                                        
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (Chargeable weight × [3PL per KG]) + (IB Fee × Units × Exchange) + Special cargo surcharge</div>
+                                            <div class="formula-line">Per KG fee total: ¥<span id="tplPerKg">0.00</span></div>
+                                            <div class="formula-line">IB fee: ¥<span id="tplIBFee">0.00</span></div>
+                                            <div class="formula-line">Special cargo surcharge: ¥<span id="tplSpecialCargo">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL Express AOSS cost (duty excl. + duty)</h4>
+                                        <div class="value" id="expressAossAirCost">¥0.00</div>
+                                        
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (WC weight × Express rate) + (EC weight × Express rate) + (CC weight × Express rate) + (Units × Declared Value RMB/Unit - 3PL × Tariff rate) + Special cargo surcharge</div>
+                                            <div class="formula-line">West cost: ¥<span id="expressAossWestCost">0.00</span></div>
+                                            <div class="formula-line">East cost: ¥<span id="expressAossEastCost">0.00</span></div>
+                                            <div class="formula-line">Central cost: ¥<span id="expressAossCentralCost">0.00</span></div>
+                                            <div class="formula-line">Duty cost: ¥<span id="expressAossDutyCost">0.00</span></div>
+                                            <div class="formula-line">Special cargo surcharge: ¥<span id="expressAossSpecialCargo">0.00</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="comparison-card tpl">
+                                        <h4>3PL Express MSS cost (duty excl. + duty)</h4>
+                                        <div class="value" id="expressMssAirCost">¥0.00</div>
+                                        
+                                        <div class="formula-breakdown">
+                                            <div class="formula-line">Formula = (Chargeable weight × [3PL Express per KG]) + (IB Fee × Units × Exchange) + (Units × Declared Value RMB/Unit - 3PL × Tariff rate) + Special cargo surcharge</div>
+                                            <div class="formula-line">Per KG fee total: ¥<span id="expressPerKg">0.00</span></div>
+                                            <div class="formula-line">IB fee: ¥<span id="expressIBFee">0.00</span></div>
+                                            <div class="formula-line">Duty cost: ¥<span id="expressDutyCost">0.00</span></div>
+                                            <div class="formula-line">Special cargo surcharge: ¥<span id="expressSpecialCargo">0.00</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="air-noResultsSection">
+                            <div class="result-container">
+                                <h3>Results will appear here</h3>
+                                <p>Please fill all parameters and click "Calculate Costs" button</p>
+                                <i class="fas fa-calculator" style="font-size: 2.5rem; color: var(--primary); margin: 15px 0;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="custom-params-panel">
+                        <h3>3PL Rate Customization</h3>
+                        
+                        <div class="air-param-group">
+                            <div class="air-param-subgroup">
+                                <div class="sub-section-title">3PL Air</div>
+                                <div class="sub-section-description">Duty inclusive RMB/kg, 7-9 days SLA from origin pick-up or 5-8 days from flight departure to FC delivery</div>
+                                <div class="param-grid">
+                                    <div class="param-item">
+                                        <label>HKG-WC &lt;=70KG</label>
+                                        <input type="number" id="customTplPerKgHkgWc70" value="49.03">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG-WC 71-99KG</label>
+                                        <input type="number" id="customTplPerKgHkgWc99" value="49.03">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG-WC &gt;=100KG</label>
+                                        <input type="number" id="customTplPerKgHkgWc100" value="48.02">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG-EC &lt;=70KG</label>
+                                        <input type="number" id="customTplPerKgHkgEc70" value="52.27">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG-EC 71-99KG</label>
+                                        <input type="number" id="customTplPerKgHkgEc99" value="52.27">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG-EC &gt;=100KG</label>
+                                        <input type="number" id="customTplPerKgHkgEc100" value="50.98">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG-CC &lt;=70KG</label>
+                                        <input type="number" id="customTplPerKgHkgCc70" value="51.26">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG-CC 71-99KG</label>
+                                        <input type="number" id="customTplPerKgHkgCc99" value="51.26">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG-CC &gt;=100KG</label>
+                                        <input type="number" id="customTplPerKgHkgCc100" value="50.04">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-WC &lt;=70KG</label>
+                                        <input type="number" id="customTplPerKgPvgWc70" value="48.80">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-WC 71-99KG</label>
+                                        <input type="number" id="customTplPerKgPvgWc99" value="42.30">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-WC &gt;=100KG</label>
+                                        <input type="number" id="customTplPerKgPvgWc100" value="39.20">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-EC &lt;=70KG</label>
+                                        <input type="number" id="customTplPerKgPvgEc70" value="52.80">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-EC 71-99KG</label>
+                                        <input type="number" id="customTplPerKgPvgEc99" value="47.80">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-EC &gt;=100KG</label>
+                                        <input type="number" id="customTplPerKgPvgEc100" value="44.68">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-CC &lt;=70KG</label>
+                                        <input type="number" id="customTplPerKgPvgCc70" value="53.80">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-CC 71-99KG</label>
+                                        <input type="number" id="customTplPerKgPvgCc99" value="48.80">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG-CC &gt;=100KG</label>
+                                        <input type="number" id="customTplPerKgPvgCc100" value="45.68">
+                                    </div>
+                                    
+                                    <div class="param-item special-cargo-item">
+                                        <label>Special cargo surcharge total</label>
+                                        <input type="number" id="customTplSpecialCargo" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="air-param-subgroup">
+                                <div class="sub-section-title">Express</div>
+                                <div class="sub-section-description">Not duty inclusive RMB/kg, ~5 days SLA</div>
+                                <div class="param-grid">
+                                    <div class="param-item">
+                                        <label>HKG &lt;=70KG</label>
+                                        <input type="number" id="customTplExpressPerKgHkg70" value="47.52">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG 71-99KG</label>
+                                        <input type="number" id="customTplExpressPerKgHkg99" value="47.52">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>HKG &gt;=100KG</label>
+                                        <input type="number" id="customTplExpressPerKgHkg100" value="47.52">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG &lt;=70KG</label>
+                                        <input type="number" id="customTplExpressPerKgPvg70" value="46.52">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG 71-99KG</label>
+                                        <input type="number" id="customTplExpressPerKgPvg99" value="46.52">
+                                    </div>
+                                    <div class="param-item">
+                                        <label>PVG &gt;=100KG</label>
+                                        <input type="number" id="customTplExpressPerKgPvg100" value="46.52">
+                                    </div>
+                                    
+                                    <div class="param-item special-cargo-item">
+                                        <label>Special cargo surcharge total</label>
+                                        <input type="number" id="customTplExpressSpecialCargo" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sub-section-title">Other</div>
+                        <div class="param-grid">
+                            <div class="param-item">
+                                <label>Exchange Rate (USD/RMB)</label>
+                                <input type="number" id="customAirExchangeRate" step="0.01" value="7.2">
+                            </div>
+                        </div>
+                        
+                        <div class="param-buttons">
+                            <button class="btn btn-custom" id="applyAirCustomRatesBtn">
+                                <i class="fas fa-check"></i> Apply Custom Rates
+                            </button>
+                            <button class="btn btn-custom" id="resetAirToPresetBtn">
+                                <i class="fas fa-undo"></i> Reset to Preset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="air-instructions-content">
+                    <div class="instructions-content">
+                        <h3><i class="fas fa-info-circle"></i> Air Freight Cost Calculator Instructions</h3>
+                        
+                        <div class="file-info">
+                            <h4>AGL Rate Card Version: 5/14/2025 (for pilot launch)</h4>
+                        </div>
+                        
+                        <h3>AGL Rate Card</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Currency</th>
+                                    <th>Incoterm</th>
+                                    <th>Product</th>
+                                    <th>POL</th>
+                                    <th>Fixed fee</th>
+                                    <th>Per KG fee</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>RMB</td>
+                                    <td>DDP/EXW</td>
+                                    <td>MSS</td>
+                                    <td>HongKong</td>
+                                    <td>805</td>
+                                    <td>46</td>
+                                </tr>
+                                <tr>
+                                    <td>RMB</td>
+                                    <td>DDP/EXW</td>
+                                    <td>MSS</td>
+                                    <td>Shanghai</td>
+                                    <td>705</td>
+                                    <td>35</td>
+                                </tr>
+                                <tr>
+                                    <td>RMB</td>
+                                    <td>DDP/EXW</td>
+                                    <td>AMP</td>
+                                    <td>HongKong</td>
+                                    <td>805</td>
+                                    <td>54</td>
+                                </tr>
+                                <tr>
+                                    <td>RMB</td>
+                                    <td>DDP/EXW</td>
+                                    <td>AMP</td>
+                                    <td>Shanghai</td>
+                                    <td>705</td>
+                                    <td>43</td>
+                                </tr>
+                                <tr>
+                                    <td>RMB</td>
+                                    <td>FOB</td>
+                                    <td>MSS</td>
+                                    <td>HongKong</td>
+                                    <td>555</td>
+                                    <td>43</td>
+                                </tr>
+                                <tr>
+                                    <td>RMB</td>
+                                    <td>FOB</td>
+                                    <td>MSS</td>
+                                    <td>Shanghai</td>
+                                    <td>555</td>
+                                    <td>34</td>
+                                </tr>
+                                <tr>
+                                    <td>RMB</td>
+                                    <td>FOB</td>
+                                    <td>AMP</td>
+                                    <td>HongKong</td>
+                                    <td>555</td>
+                                    <td>51</td>
+                                </tr>
+                                <tr>
+                                    <td>RMB</td>
+                                    <td>FOB</td>
+                                    <td>AMP</td>
+                                    <td>Shanghai</td>
+                                    <td>555</td>
+                                    <td>42</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3>How to Use</h3>
+                        <ol>
+                            <li>Fill in all required parameters in the "Parameter Settings" section.</li>
+                            <li>Click "Calculate Costs with Pre-set Rates" to see the results.</li>
+                            <li>You can customize 3PL rates in the "3PL Rate Customization" section and apply them.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="page-content" id="knowledge-page" style="display:none;">
+            <div class="page-header">
+                <h1><i class="fas fa-book"></i> Knowledge Center</h1>
+            </div>
+            <div class="placeholder">
+                <i class="fas fa-book"></i>
+                <h3>Knowledge Center</h3>
+                <p>This section is currently under development and will be available soon.</p>
+            </div>
+        </div>
+        
+        <div class="page-content" id="course-page" style="display:none;">
+            <div class="page-header">
+                <h1><i class="fas fa-graduation-cap"></i> Training Courses</h1>
+            </div>
+            <div class="placeholder">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>Training Courses</h3>
+                <p>This section is currently under development and will be available soon.</p>
+            </div>
+        </div>
+        
+        <div class="page-content" id="demo-page" style="display:none;">
+            <div class="page-header">
+                <h1><i class="fas fa-desktop"></i> System Demo</h1>
+            </div>
+            <div class="placeholder">
+                <i class="fas fa-desktop"></i>
+                <h3>System Demo</h3>
+                <p>This section is currently under development and will be available soon.</p>
+            </div>
+        </div>
+        
+        <div class="page-content" id="home-page" style="display:none;">
+            <div class="page-header">
+                <h1><i class="fas fa-home"></i> Home</h1>
+            </div>
+            <div class="placeholder">
+                <i class="fas fa-home"></i>
+                <h3>Welcome to AGL Sales Toolkits</h3>
+                <p>Select a tool from the sidebar to get started with logistics cost calculations and comparisons.</p>
+				<p style="margin-top: 20px;">Leave your comments in this <a href="https://quip-amazon.com/TZpMAROheGCD/Sales-toolkits-file-feedback-collection#temp:C:eST35ab56906c3a4b788f3b5904a" target=“_blank” class="contact-link">Quip</a> for our continual improvement.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating navigation buttons -->
+    <div class="floating-nav ocean-floating-nav">
+        <button class="floating-btn" onclick="scrollToSection('parameter-settings')">Parameter Settings</button>
+        <button class="floating-btn" onclick="scrollToSection('fcl-results')">FCL with IB fee</button>
+        <button class="floating-btn" onclick="scrollToSection('lcl-results')">LCL with IB fee</button>
+        <button class="floating-btn" onclick="scrollToSection('tpl-custom')">3PL Rate Customization</button>
+    </div>
+    
+    <div class="floating-nav air-floating-nav" style="display: none;">
+        <button class="floating-btn" onclick="scrollToSection('parameter-settings')">Parameter Settings</button>
+        <button class="floating-btn" onclick="scrollToSection('air-resultsSection')">Calculation Results</button>
+        <button class="floating-btn" onclick="scrollToSection('tpl-custom')">3PL Rate Customization</button>
+    </div>
+
+    <script>
+        // Password validation logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordModal = document.getElementById('passwordModal');
+            const passwordInput = document.getElementById('passwordInput');
+            const passwordError = document.getElementById('passwordError');
+            const passwordSubmit = document.getElementById('passwordSubmit');
+            
+            // Get current date (month and day)
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const requiredPassword = `aglc${month}${day}`;
+            
+            // Show password modal
+            passwordModal.style.display = 'flex';
+            
+            // Submit password
+            passwordSubmit.addEventListener('click', function() {
+                if (passwordInput.value === requiredPassword) {
+                    passwordModal.style.display = 'none';
+                } else {
+                    passwordError.style.display = 'block';
+                }
+            });
+            
+            // Press Enter to submit
+            passwordInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    passwordSubmit.click();
+                }
+            });
+            
+            // 初始化预设参数
+            let oceanPresetRates = {
+                tplWestFclRate: 3998,
+                tplEastFclRate: 7391,
+                tplCentralFclRate: 6610,
+                tplWestRmbPerKg: 5.1,
+                tplEastRmbPerKg: 6.8,
+                tplCentralRmbPerKg: 6.8,
+                tplWestRmbPerCbm: 789.84,
+                tplEastRmbPerCbm: 980.64,
+                tplCentralRmbPerCbm: 1033.2,
+                exchangeRate: 7.2
+            };
+            
+            let airPresetRates = {
+                tplPerKgHkgWc70: 49.00,
+                tplPerKgHkgWc99: 49.00,
+                tplPerKgHkgWc100: 48.00,
+                tplPerKgHkgEc70: 51.25,
+                tplPerKgHkgEc99: 51.25,
+                tplPerKgHkgEc100: 50.00,
+                tplPerKgHkgCc70: 52.25,
+                tplPerKgHkgCc99: 52.25,
+                tplPerKgHkgCc100: 51.00,
+                tplPerKgPvgWc70: 51.80,
+                tplPerKgPvgWc99: 46.80,
+                tplPerKgPvgWc100: 42.68,
+                tplPerKgPvgEc70: 52.80,
+                tplPerKgPvgEc99: 47.80,
+                tplPerKgPvgEc100: 44.68,
+                tplPerKgPvgCc70: 53.80,
+                tplPerKgPvgCc99: 48.80,
+                tplPerKgPvgCc100: 45.68,
+                tplExpressPerKgHkg70: 45.62,
+                tplExpressPerKgHkg99: 44.81,
+                tplExpressPerKgHkg100: 44.81,
+                tplExpressPerKgPvg70: 47.62,
+                tplExpressPerKgPvg99: 46.81,
+                tplExpressPerKgPvg100: 46.81,
+                exchangeRate: 7.2,
+                tplSpecialCargo: 0,
+                tplExpressSpecialCargo: 0
+            };
+            
+            // AGL预设费率
+            let aglPresetRates = {
+                ampFclFixedBooking: 106,
+                ampFclBooking40HC: 8500,
+                mssFclFixedWest: 106,
+                mssFclFixedEast: 106,
+                mss40HCWest: 4199,
+                mss40HCEast: 5474,
+                ampLclFixed: 100.89,
+                ampLclRatePerCBM: 162.4,
+                mssLclFixedWest: 100.89,
+                mssLclFixedEast: 100.89,
+                mssLclRatePerCbmWest: 90.65,
+                mssLclRatePerCbmEast: 122.21,
+                smpRegionalPercents: {
+                    west: 0.249,
+                    midEast: 0.223,
+                    southEast: 0.169,
+                    northEast: 0.147,
+                    central: 0.249
+                }
+            };
+            
+            // FCL 40HC费用映射表
+            const ampFclBooking40HCRates = {
+                "NINGBO": 8561,
+                "YANTIAN": 8504,
+                "SHANGHAI": 8564,
+                "XIAMEN": 8554,
+                "QINGDAO": 8555,
+                "TIANJIN": 8564,
+                "FUZHOU": 8547,
+                "HONGKONG": 8529,
+                "ZHUHAI": 8554,
+                "LIANYUNGANG": 8555
+            };
+            
+            const mssFclBooking40HCWestRates = {
+                "NINGBO": 4256,
+                "YANTIAN": 4199,
+                "SHANGHAI": 4259,
+                "XIAMEN": 4249,
+                "QINGDAO": 4250,
+                "TIANJIN": 4259,
+                "FUZHOU": 4242,
+                "HONGKONG": 4224,
+                "ZHUHAI": 4249,
+                "LIANYUNGANG": 4250
+            };
+            
+            const mssFclBooking40HCEastRates = {
+                "NINGBO": 5531,
+                "YANTIAN": 5474,
+                "SHANGHAI": 5536.7777,
+                "XIAMEN": 5524,
+                "QINGDAO": 5525,
+                "TIANJIN": 5534,
+                "FUZHOU": 5517,
+                "HONGKONG": 5499,
+                "ZHUHAI": 5524,
+                "LIANYUNGANG": 5525
+            };
+            
+            // LCL费用映射表
+            const ampLclRates = {
+                "NINGBO": { exportClearance: 10.6666, importClearance: 76, rates: [160.9097, 160.9097, 160.9097, 160.9097] },
+                "SHANGHAI": { exportClearance: 13.3333, importClearance: 76, rates: [160.4291, 160.4291, 160.4291, 160.4291] },
+                "XIAMEN": { exportClearance: 17.7777, importClearance: 76, rates: [160.7902, 160.7902, 160.7902, 160.7902] },
+                "QINGDAO": { exportClearance: 20.4444, importClearance: 76, rates: [159.4444, 159.4444, 159.4444, 159.4444] },
+                "SHENZHEN": { exportClearance: 24.8888, importClearance: 76, rates: [162.4, 162.4, 162.4, 162.4] }
+            };
+            
+            const mssLclWestRates = {
+                "NINGBO": { exportClearance: 10.6666, importClearance: 76, rates: [89.1597, 89.1597, 89.1597, 89.1597] },
+                "SHANGHAI": { exportClearance: 13.3333, importClearance: 76, rates: [88.6791, 88.6791, 88.6791, 88.6791] },
+                "XIAMEN": { exportClearance: 17.7777, importClearance: 76, rates: [89.0402, 89.0402, 89.0402, 89.0402] },
+                "QINGDAO": { exportClearance: 20.4444, importClearance: 76, rates: [87.6944, 87.6944, 87.6944, 87.6944] },
+                "SHENZHEN": { exportClearance: 24.8888, importClearance: 76, rates: [90.65, 90.65, 90.65, 90.65] }
+            };
+            
+            const mssLclEastRates = {
+                "NINGBO": { exportClearance: 10.6666, importClearance: 76, rates: [118.0569, 118.0569, 118.0569, 118.0569] },
+                "SHANGHAI": { exportClearance: 13.3333, importClearance: 76, rates: [117.5986, 117.5986, 117.5986, 117.5986] },
+                "XIAMEN": { exportClearance: 17.7777, importClearance: 76, rates: [118.1152, 118.1152, 118.1152, 118.1152] },
+                "QINGDAO": { exportClearance: 20.4444, importClearance: 76, rates: [114.8875, 114.8875, 114.8875, 114.8875] },
+                "SHENZHEN": { exportClearance: 24.8888, importClearance: 76, rates: [122.2083, 122.2083, 122.2083, 122.2083] }
+            };
+
+            // Air freight rates
+            const airAglRates = {
+                "HONGKONG": {
+                    "DDP": {
+                        "MSS": { fixed: 805, perKg: 46 },
+                        "AMP": { fixed: 805, perKg: 54 }
+                    },
+                    "EXW": {
+                        "MSS": { fixed: 805, perKg: 46 },
+                        "AMP": { fixed: 805, perKg: 54 }
+                    },
+                    "FOB": {
+                        "MSS": { fixed: 555, perKg: 43 },
+                        "AMP": { fixed: 555, perKg: 51 }
+                    }
+                },
+                "SHANGHAI": {
+                    "DDP": {
+                        "MSS": { fixed: 705, perKg: 35 },
+                        "AMP": { fixed: 705, perKg: 43 }
+                    },
+                    "EXW": {
+                        "MSS": { fixed: 705, perKg: 35 },
+                        "AMP": { fixed: 705, perKg: 43 }
+                    },
+                    "FOB": {
+                        "MSS": { fixed: 555, perKg: 34 },
+                        "AMP": { fixed: 555, perKg: 42 }
+                    }
+                }
+            };
+            
+            // 使用预设参数初始化当前参数
+            let currentOceanRates = {...oceanPresetRates};
+            let currentAirRates = {...airPresetRates};
+            let currentAglRates = {...aglPresetRates};
+            
+            // 辅助函数：格式化金额显示
+            function formatCurrency(value, isRMB = false) {
+                const symbol = isRMB ? '¥' : '$';
+                return symbol + value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
+            
+            // 滚动到指定部分
+            function scrollToSection(sectionId) {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            
+            // 导航链接
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page-content');
+            const resultsSection = document.getElementById('resultsSection');
+            const noResultsSection = document.getElementById('noResultsSection');
+            const airResultsSection = document.getElementById('air-resultsSection');
+            const airNoResultsSection = document.getElementById('air-noResultsSection');
+            
+            // 默认显示海运页面
+            document.getElementById('ocean-page').style.display = 'block';
+            
+            // 导航点击事件
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetPage = this.getAttribute('data-page');
+                    
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    pages.forEach(page => {
+                        page.style.display = 'none';
+                    });
+                    
+                    document.getElementById(`${targetPage}-page`).style.display = 'block';
+                    
+                    // 显示/隐藏悬浮框
+                    if (targetPage === 'ocean') {
+                        document.querySelector('.ocean-floating-nav').style.display = 'flex';
+                        document.querySelector('.air-floating-nav').style.display = 'none';
+                    } else if (targetPage === 'air') {
+                        document.querySelector('.ocean-floating-nav').style.display = 'none';
+                        document.querySelector('.air-floating-nav').style.display = 'flex';
+                    } else {
+                        document.querySelector('.ocean-floating-nav').style.display = 'none';
+                        document.querySelector('.air-floating-nav').style.display = 'none';
+                    }
+                    
+                    // 默认显示成本比较器
+                    if (targetPage === 'ocean' || targetPage === 'air') {
+                        document.querySelector('.tab.active')?.classList.remove('active');
+                        document.querySelector('.tab-content.active')?.classList.remove('active');
+                        
+                        const calculatorTab = document.querySelector(`[data-tab="${targetPage === 'ocean' ? 'calculator' : 'air-calculator'}"]`);
+                        const calculatorContent = document.getElementById(`${targetPage === 'ocean' ? 'calculator' : 'air-calculator'}-content`);
+                        
+                        if (calculatorTab && calculatorContent) {
+                            calculatorTab.classList.add('active');
+                            calculatorContent.classList.add('active');
+                        }
+                    }
+                });
+            });
+            
+            // 标签切换
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.dataset.tab;
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-content`).classList.add('active');
+                    
+                    // 显示/隐藏悬浮框
+                    const oceanActive = document.getElementById('ocean-page').style.display === 'block';
+                    const airActive = document.getElementById('air-page').style.display === 'block';
+                    
+                    if (oceanActive && tabId === 'calculator') {
+                        document.querySelector('.ocean-floating-nav').style.display = 'flex';
+                    } else if (airActive && tabId === 'air-calculator') {
+                        document.querySelector('.air-floating-nav').style.display = 'flex';
+                    } else {
+                        document.querySelector('.ocean-floating-nav').style.display = 'none';
+                        document.querySelector('.air-floating-nav').style.display = 'none';
+                    }
+                });
+            });
+            
+            // 海运逻辑
+            const categorySelect = document.getElementById('category');
+            const customTariffInput = document.getElementById('customTariffRate');
+            const tariffError = document.getElementById('tariffError');
+            
+            // 预设关税数据
+            const tariffRates = {
+                "gl_home-improvement LED bulbs": 0.32,
+                "gl_home-improvement Table lamps": 0.587,
+                "gl_home-improvement Faucets": 0.55,
+                "gl_wireless Phone cases": 0.428,
+                "gl_wireless Data cables": 0.30,
+                "gl_apparel Women's tops": 0.695,
+                "gl_toy Toys": 0.30,
+                "gl_beauty Nail clippers": 0.375,
+                "gl_drugstore Trash bags": 0.33
+            };
+            
+            // 更新关税显示
+            function updateTariffDisplay() {
+                if (categorySelect.value === 'custom') {
+                    customTariffInput.disabled = false;
+                } else {
+                    customTariffInput.disabled = true;
+                    const rate = tariffRates[categorySelect.value] || 0.35;
+                    customTariffInput.value = (rate * 100).toFixed(1);
+                }
+            }
+            
+            // 初始化
+            updateTariffDisplay();
+            
+            categorySelect.addEventListener('change', updateTariffDisplay);
+            
+            // 百分比输入处理
+            customTariffInput.addEventListener('input', function(e) {
+                let value = this.value.replace(/[^\d.]/g, '');
+                
+                let decimalCount = (value.match(/\./g) || []).length;
+                if (decimalCount > 1) {
+                    value = value.substring(0, value.lastIndexOf('.'));
+                }
+                
+                let numValue = parseFloat(value) || 0;
+                if (numValue > 100) {
+                    numValue = 100;
+                    value = '100';
+                }
+                
+                this.value = value;
+            });
+            
+            // 货币切换状态
+            let isRMB = false;
+            const currencyToggle = document.getElementById('currencyToggle');
+            
+            // 货币切换功能
+            currencyToggle.addEventListener('click', function() {
+                isRMB = !isRMB;
+                this.textContent = isRMB ? 'Switch to USD' : 'Switch to RMB';
+                
+                // 更新所有显示的值
+                updateCurrencyDisplay();
+            });
+            
+            // 存储原始美元值
+            const originalValues = {};
+            
+            // 更新货币显示
+            function updateCurrencyDisplay() {
+                const exchangeRate = currentOceanRates.exchangeRate;
+                
+                document.querySelectorAll('.comparison-card .value').forEach(el => {
+                    const id = el.id;
+                    if (!originalValues[id]) {
+                        originalValues[id] = parseFloat(el.textContent.replace(/[^\d.-]/g, ''));
+                    }
+                    
+                    let value = originalValues[id];
+                    if (isRMB) {
+                        value = value * exchangeRate;
+                    }
+                    
+                    el.textContent = formatCurrency(value, isRMB);
+                });
+                
+                document.querySelectorAll('.formula-line span').forEach(el => {
+                    const text = el.textContent;
+                    if (text.includes('$') || text.includes('¥')) {
+                        const value = parseFloat(text.replace(/[^\d.-]/g, ''));
+                        if (!isNaN(value)) {
+                            const convertedValue = isRMB ? value * exchangeRate : value;
+                            el.textContent = formatCurrency(convertedValue, isRMB).replace(/[¥$]/g, '');
+                        }
+                    }
+                });
+            }
+            
+            // 计算海运成本
+            function calculateCosts() {
+                // 验证输入
+                let tariffInput = customTariffInput.value;
+                if (tariffInput.includes('%')) {
+                    tariffInput = tariffInput.replace('%', '');
+                }
+                const customTariff = parseFloat(tariffInput);
+                const westPercent = parseFloat(document.getElementById('westUnitPercent').value);
+                const eastPercent = parseFloat(document.getElementById('eastUnitPercent').value);
+                const centralPercent = parseFloat(document.getElementById('centralUnitPercent').value);
+                
+                let valid = true;
+                
+                if (categorySelect.value === 'custom' && (isNaN(customTariff) || customTariff < 0 || customTariff > 100)) {
+                    tariffError.style.display = 'block';
+                    valid = false;
+                } else {
+                    tariffError.style.display = 'none';
+                }
+                
+                if (isNaN(westPercent) || westPercent < 0 || westPercent > 100) {
+                    document.getElementById('westError').style.display = 'block';
+                    valid = false;
+                } else {
+                    document.getElementById('westError').style.display = 'none';
+                }
+                
+                if (isNaN(eastPercent) || eastPercent < 0 || eastPercent > 100) {
+                    document.getElementById('eastError').style.display = 'block';
+                    valid = false;
+                } else {
+                    document.getElementById('eastError').style.display = 'none';
+                }
+                
+                if (isNaN(centralPercent) || centralPercent < 0 || centralPercent > 100) {
+                    document.getElementById('centralError').style.display = 'block';
+                    valid = false;
+                } else {
+                    document.getElementById('centralError').style.display = 'none';
+                }
+                
+                if (!valid) {
+                    return;
+                }
+                
+                // 获取输入值
+                const pol = document.getElementById('pol').value;
+                const category = document.getElementById('category').value;
+                const fclUnits = parseInt(document.getElementById('fclUnits').value) || 1000;
+                const shipmentVolume = parseFloat(document.getElementById('shipmentVolume').value) || 25.5;
+                const lclUnitsPerCBM = parseInt(document.getElementById('lclUnitsPerCBM').value) || 200;
+                const lclKgPerCBM = parseInt(document.getElementById('lclKgPerCBM').value) || 500;
+                const ibFeeWest = parseFloat(document.getElementById('ibFeeWest').value) || 0.3;
+                const ibFeeEast = parseFloat(document.getElementById('ibFeeEast').value) || 0.16;
+                const declareValueAGL = parseFloat(document.getElementById('declareValueAGL').value) || 1.0;
+                const declareValue3PL = parseFloat(document.getElementById('declareValue3PL').value) || 1.0;
+                
+                // 确定POL映射
+                const fclPol = pol === "YANTIAN" ? "YANTIAN" : pol;
+                const lclPol = pol === "YANTIAN" ? "SHENZHEN" : pol;
+                
+                // 获取关税率
+                let tariffRate;
+                if (category === 'custom') {
+                    tariffRate = customTariff / 100;
+                } else {
+                    tariffRate = tariffRates[category] || 0.35;
+                }
+                
+                // 获取FCL费率
+                const ampFclFixedBooking = currentAglRates.ampFclFixedBooking;
+                const ampFclBooking40HC = ampFclBooking40HCRates[fclPol] || 8500;
+                
+                // 计算成本
+                // 1. AGL AMP FCL
+                const ampFclCost = ampFclFixedBooking + ampFclBooking40HC;
+                originalValues['ampFclCost'] = ampFclCost;
+                
+                // 2. AGL MSS FCL - West
+                const aglMssFixedWest = currentAglRates.mssFclFixedWest;
+                const aglMss40HCWest = mssFclBooking40HCWestRates[fclPol] || 4199;
+                const aglMssIBWest = ibFeeWest * fclUnits;
+                const aglMssFclWestCost = aglMssFixedWest + aglMss40HCWest + aglMssIBWest;
+                originalValues['aglMssFclWestCost'] = aglMssFclWestCost;
+                
+                // 3. AGL MSS FCL - East
+                const aglMssFixedEast = currentAglRates.mssFclFixedEast;
+                const aglMss40HCEast = mssFclBooking40HCEastRates[fclPol] || 5474;
+                const aglMssIBEast = ibFeeEast * fclUnits;
+                const aglMssFclEastCost = aglMssFixedEast + aglMss40HCEast + aglMssIBEast;
+                originalValues['aglMssFclEastCost'] = aglMssFclEastCost;
+                
+                // 4. 3PL AOSS FCL
+                const aossWestCost = currentOceanRates.tplWestFclRate * (westPercent / 100);
+                const aossEastCost = currentOceanRates.tplEastFclRate * (eastPercent / 100);
+                const aossCentralCost = currentOceanRates.tplCentralFclRate * (centralPercent / 100);
+                const tplAossFclCost = aossWestCost + aossEastCost + aossCentralCost;
+                originalValues['tplAossFclCost'] = tplAossFclCost;
+                
+                // 5. 3PL MSS FCL - West
+                const tplWestIB = ibFeeWest * fclUnits;
+                const tplWestCost = currentOceanRates.tplWestFclRate + tplWestIB;
+                originalValues['tplWestCost'] = tplWestCost;
+                
+                // 6. 3PL MSS FCL - East
+                const tplEastIB = ibFeeEast * fclUnits;
+                const tplEastCost = currentOceanRates.tplEastFclRate + tplEastIB;
+                originalValues['tplEastCost'] = tplEastCost;
+                
+                // 更新FCL结果
+                document.getElementById('ampFclCost').textContent = formatCurrency(ampFclCost);
+                document.getElementById('aglMssFclWestCost').textContent = formatCurrency(aglMssFclWestCost);
+                document.getElementById('aglMssFclEastCost').textContent = formatCurrency(aglMssFclEastCost);
+                document.getElementById('tplAossFclCost').textContent = formatCurrency(tplAossFclCost);
+                document.getElementById('tplWestCost').textContent = formatCurrency(tplWestCost);
+                document.getElementById('tplEastCost').textContent = formatCurrency(tplEastCost);
+                
+                // 更新公式值
+                document.getElementById('ampFclFixedBooking').textContent = ampFclFixedBooking.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('ampFclBooking40HC').textContent = ampFclBooking40HC.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('aglMssFixedWest').textContent = aglMssFixedWest.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMss40HCWest').textContent = aglMss40HCWest.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMssIBWest').textContent = aglMssIBWest.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('aglMssFixedEast').textContent = aglMssFixedEast.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMss40HCEast').textContent = aglMss40HCEast.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMssIBEast').textContent = aglMssIBEast.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('tplWestFixed').textContent = currentOceanRates.tplWestFclRate.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplWestIB').textContent = tplWestIB.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('tplEastFixed').textContent = currentOceanRates.tplEastFclRate.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplEastIB').textContent = tplEastIB.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('aossWestCost').textContent = aossWestCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossEastCost').textContent = aossEastCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossCentralCost').textContent = aossCentralCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                // LCL计算
+                const totalUnitsLCL = shipmentVolume * lclUnitsPerCBM;
+                
+                // 获取LCL费率
+                const getLclRate = (rates, volume) => {
+                    if (volume <= 5) return rates.rates[0];
+                    if (volume <= 10) return rates.rates[1];
+                    if (volume <= 15) return rates.rates[2];
+                    return rates.rates[3];
+                };
+                
+                // 7. AGL AMP LCL
+                const ampLclData = ampLclRates[lclPol] || ampLclRates["SHENZHEN"];
+                const ampLclFixedFee = ampLclData.exportClearance + ampLclData.importClearance;
+                const ampLclRatePerCBM = getLclRate(ampLclData, shipmentVolume);
+                const ampLclDuty = totalUnitsLCL * declareValueAGL * tariffRate;
+                const ampLclCost = ampLclFixedFee + (ampLclRatePerCBM * shipmentVolume) + ampLclDuty;
+                originalValues['ampLclCost'] = ampLclCost;
+                
+                // 8. AGL MSS LCL - West
+                const mssLclWestData = mssLclWestRates[lclPol] || mssLclWestRates["SHENZHEN"];
+                const mssLclWestFixedFee = mssLclWestData.exportClearance + mssLclWestData.importClearance;
+                const mssLclWestRatePerCBM = getLclRate(mssLclWestData, shipmentVolume);
+                const mssLclWestIB = ibFeeWest * totalUnitsLCL;
+                const mssLclWestDuty = totalUnitsLCL * declareValueAGL * tariffRate;
+                const aglMssLclWestCost = mssLclWestFixedFee + (mssLclWestRatePerCBM * shipmentVolume) + mssLclWestIB + mssLclWestDuty;
+                originalValues['aglMssLclWestCost'] = aglMssLclWestCost;
+                
+                // 9. AGL MSS LCL - East
+                const mssLclEastData = mssLclEastRates[lclPol] || mssLclEastRates["SHENZHEN"];
+                const mssLclEastFixedFee = mssLclEastData.exportClearance + mssLclEastData.importClearance;
+                const mssLclEastRatePerCBM = getLclRate(mssLclEastData, shipmentVolume);
+                const mssLclEastIB = ibFeeEast * totalUnitsLCL;
+                const mssLclEastDuty = totalUnitsLCL * declareValueAGL * tariffRate;
+                const aglMssLclEastCost = mssLclEastFixedFee + (mssLclEastRatePerCBM * shipmentVolume) + mssLclEastIB + mssLclEastDuty;
+                originalValues['aglMssLclEastCost'] = aglMssLclEastCost;
+                
+                // 10. AGL SMP LCL
+                const smpFixedFee = (mssLclWestFixedFee + mssLclEastFixedFee) * 2.5; // 动态计算
+                const smpDuty = totalUnitsLCL * declareValueAGL * tariffRate;
+                
+                // 计算各区域费用
+                const smpWestCost = shipmentVolume * currentAglRates.smpRegionalPercents.west * getLclRate(mssLclWestData, shipmentVolume);
+                const smpMidEastCost = shipmentVolume * currentAglRates.smpRegionalPercents.midEast * getLclRate(mssLclEastData, shipmentVolume);
+                const smpSouthEastCost = shipmentVolume * currentAglRates.smpRegionalPercents.southEast * getLclRate(mssLclEastData, shipmentVolume);
+                const smpNorthEastCost = shipmentVolume * currentAglRates.smpRegionalPercents.northEast * getLclRate(mssLclEastData, shipmentVolume);
+                const smpCentralCost = shipmentVolume * currentAglRates.smpRegionalPercents.central * getLclRate(mssLclWestData, shipmentVolume);
+                
+                const smpLclCost = smpFixedFee + smpWestCost + smpMidEastCost + smpSouthEastCost + smpNorthEastCost + smpCentralCost + smpDuty;
+                originalValues['smpLclCost'] = smpLclCost;
+                
+                // 11. 3PL AOSS LCL (duty incl.)
+                const aossLclWestCost = (currentOceanRates.tplWestRmbPerKg * shipmentVolume * (westPercent/100) * lclKgPerCBM) / currentOceanRates.exchangeRate;
+                const aossLclEastCost = (currentOceanRates.tplEastRmbPerKg * shipmentVolume * (eastPercent/100) * lclKgPerCBM) / currentOceanRates.exchangeRate;
+                const aossLclCentralCost = (currentOceanRates.tplCentralRmbPerKg * shipmentVolume * (centralPercent/100) * lclKgPerCBM) / currentOceanRates.exchangeRate;
+                const tplAossLclDutyIncluded = aossLclWestCost + aossLclEastCost + aossLclCentralCost;
+                originalValues['tplAossLclDutyIncluded'] = tplAossLclDutyIncluded;
+                
+                // 12. 3PL MSS LCL - West (duty incl.)
+                const tplMssLclWestBaseDutyIncl = (currentOceanRates.tplWestRmbPerKg * shipmentVolume * lclKgPerCBM) / currentOceanRates.exchangeRate;
+                const tplMssLclWestIBDutyIncl = ibFeeWest * totalUnitsLCL;
+                const tplMssLclWestDutyIncl = tplMssLclWestBaseDutyIncl + tplMssLclWestIBDutyIncl;
+                originalValues['tplMssLclWestDutyIncl'] = tplMssLclWestDutyIncl;
+                
+                // 13. 3PL MSS LCL - East (duty incl.)
+                const tplMssLclEastBaseDutyIncl = (currentOceanRates.tplEastRmbPerKg * shipmentVolume * lclKgPerCBM) / currentOceanRates.exchangeRate;
+                const tplMssLclEastIBDutyIncl = ibFeeEast * totalUnitsLCL;
+                const tplMssLclEastDutyIncl = tplMssLclEastBaseDutyIncl + tplMssLclEastIBDutyIncl;
+                originalValues['tplMssLclEastDutyIncl'] = tplMssLclEastDutyIncl;
+                
+                // 14. 3PL AOSS LCL (duty excl.) + Duty
+                const aossLclWestCost2 = (currentOceanRates.tplWestRmbPerCbm * shipmentVolume * (westPercent/100)) / currentOceanRates.exchangeRate;
+                const aossLclEastCost2 = (currentOceanRates.tplEastRmbPerCbm * shipmentVolume * (eastPercent/100)) / currentOceanRates.exchangeRate;
+                const aossLclCentralCost2 = (currentOceanRates.tplCentralRmbPerCbm * shipmentVolume * (centralPercent/100)) / currentOceanRates.exchangeRate;
+                const aossLclDuty = totalUnitsLCL * declareValue3PL * tariffRate;
+                const tplAossLclWithoutDuty = aossLclWestCost2 + aossLclEastCost2 + aossLclCentralCost2 + aossLclDuty;
+                originalValues['tplAossLclWithoutDuty'] = tplAossLclWithoutDuty;
+                
+                // 15. 3PL MSS LCL - West (duty excl.) + duty
+                const tplMssLclWestBase = (currentOceanRates.tplWestRmbPerCbm * shipmentVolume) / currentOceanRates.exchangeRate;
+                const tplMssLclWestIB = ibFeeWest * totalUnitsLCL;
+                const tplMssLclWestDuty = totalUnitsLCL * declareValue3PL * tariffRate;
+                const tplMssLclWestCost = tplMssLclWestBase + tplMssLclWestIB + tplMssLclWestDuty;
+                originalValues['tplMssLclWestCost'] = tplMssLclWestCost;
+                
+                // 16. 3PL MSS LCL - East (duty excl.) + duty
+                const tplMssLclEastBase = (currentOceanRates.tplEastRmbPerCbm * shipmentVolume) / currentOceanRates.exchangeRate;
+                const tplMssLclEastIB = ibFeeEast * totalUnitsLCL;
+                const tplMssLclEastDuty = totalUnitsLCL * declareValue3PL * tariffRate;
+                const tplMssLclEastCost = tplMssLclEastBase + tplMssLclEastIB + tplMssLclEastDuty;
+                originalValues['tplMssLclEastCost'] = tplMssLclEastCost;
+                
+                // 更新LCL结果
+                document.getElementById('ampLclCost').textContent = formatCurrency(ampLclCost);
+                document.getElementById('smpLclCost').textContent = formatCurrency(smpLclCost);
+                document.getElementById('aglMssLclWestCost').textContent = formatCurrency(aglMssLclWestCost);
+                document.getElementById('aglMssLclEastCost').textContent = formatCurrency(aglMssLclEastCost);
+                document.getElementById('tplAossLclDutyIncluded').textContent = formatCurrency(tplAossLclDutyIncluded);
+                document.getElementById('tplMssLclWestDutyIncl').textContent = formatCurrency(tplMssLclWestDutyIncl);
+                document.getElementById('tplMssLclEastDutyIncl').textContent = formatCurrency(tplMssLclEastDutyIncl);
+                document.getElementById('tplAossLclWithoutDuty').textContent = formatCurrency(tplAossLclWithoutDuty);
+                document.getElementById('tplMssLclWestCost').textContent = formatCurrency(tplMssLclWestCost);
+                document.getElementById('tplMssLclEastCost').textContent = formatCurrency(tplMssLclEastCost);
+                
+                // 更新LCL公式值
+                document.getElementById('ampLclFixed').textContent = ampLclFixedFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('ampLclRate').textContent = (ampLclRatePerCBM * shipmentVolume).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('ampLclDuty').textContent = ampLclDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('aglMssLclWestFixed').textContent = mssLclWestFixedFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMssLclWestRate').textContent = (mssLclWestRatePerCBM * shipmentVolume).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMssLclWestIB').textContent = mssLclWestIB.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMssLclWestDuty').textContent = mssLclWestDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('aglMssLclEastFixed').textContent = mssLclEastFixedFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMssLclEastRate').textContent = (mssLclEastRatePerCBM * shipmentVolume).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMssLclEastIB').textContent = mssLclEastIB.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aglMssLclEastDuty').textContent = mssLclEastDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('smpFixedFee').textContent = smpFixedFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('smpWestCost').textContent = smpWestCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('smpMidEastCost').textContent = smpMidEastCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('smpSouthEastCost').textContent = smpSouthEastCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('smpNorthEastCost').textContent = smpNorthEastCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('smpCentralCost').textContent = smpCentralCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('smpDuty').textContent = smpDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('aossLclWestCost').textContent = aossLclWestCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossLclEastCost').textContent = aossLclEastCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossLclCentralCost').textContent = aossLclCentralCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('tplMssLclWestBaseDutyIncl').textContent = tplMssLclWestBaseDutyIncl.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplMssLclWestIBDutyIncl').textContent = tplMssLclWestIBDutyIncl.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('tplMssLclEastBaseDutyIncl').textContent = tplMssLclEastBaseDutyIncl.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplMssLclEastIBDutyIncl').textContent = tplMssLclEastIBDutyIncl.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('aossLclWestCost2').textContent = aossLclWestCost2.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossLclEastCost2').textContent = aossLclEastCost2.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossLclCentralCost2').textContent = aossLclCentralCost2.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossLclDuty').textContent = aossLclDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('tplMssLclWestBase').textContent = tplMssLclWestBase.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplMssLclWestIB').textContent = tplMssLclWestIB.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplMssLclWestDuty').textContent = tplMssLclWestDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('tplMssLclEastBase').textContent = tplMssLclEastBase.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplMssLclEastIB').textContent = tplMssLclEastIB.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplMssLclEastDuty').textContent = tplMssLclEastDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                // 显示结果
+                resultsSection.classList.remove('hidden');
+                noResultsSection.classList.add('hidden');
+                
+                // 更新货币显示
+                updateCurrencyDisplay();
+            }
+            
+            // 海运计算按钮事件
+            document.getElementById('calculateBtn').addEventListener('click', calculateCosts);
+            
+            // 空运逻辑
+            const airCategorySelect = document.getElementById('air-category');
+            const airCustomTariffInput = document.getElementById('air-customTariffRate');
+            const airTariffError = document.getElementById('air-tariffError');
+            
+            // 更新空运关税显示
+            function updateAirTariffDisplay() {
+                if (airCategorySelect.value === 'custom') {
+                    airCustomTariffInput.disabled = false;
+                } else {
+                    airCustomTariffInput.disabled = true;
+                    const rate = tariffRates[airCategorySelect.value] || 0.35;
+                    airCustomTariffInput.value = (rate * 100).toFixed(1);
+                }
+            }
+            
+            // 初始化
+            updateAirTariffDisplay();
+            
+            airCategorySelect.addEventListener('change', updateAirTariffDisplay);
+            
+            // 空运重量计算
+            function calculateWeights() {
+                const volumeCBM = parseFloat(document.getElementById('volumeCBM').value) || 0;
+                const weightKg = parseFloat(document.getElementById('weightKg').value) || 0;
+                const westPercent = parseFloat(document.getElementById('air-westUnitPercent').value) || 0;
+                const eastPercent = parseFloat(document.getElementById('air-eastUnitPercent').value) || 0;
+                const centralPercent = parseFloat(document.getElementById('air-centralUnitPercent').value) || 0;
+                
+                const volumeWeight = volumeCBM / 0.006; // 调整计算逻辑
+                document.getElementById('volumeWeight').value = volumeWeight.toFixed(2);
+                
+                const chargeableWeight = Math.max(volumeWeight, weightKg);
+                document.getElementById('chargeableWeight').value = chargeableWeight.toFixed(2);
+                
+                document.getElementById('chargeableWeightWC').value = (chargeableWeight * westPercent / 100).toFixed(2);
+                document.getElementById('chargeableWeightEC').value = (chargeableWeight * eastPercent / 100).toFixed(2);
+                document.getElementById('chargeableWeightCC').value = (chargeableWeight * centralPercent / 100).toFixed(2);
+            }
+            
+            // 监听输入变化
+            document.getElementById('volumeCBM').addEventListener('input', calculateWeights);
+            document.getElementById('weightKg').addEventListener('input', calculateWeights);
+            document.getElementById('air-westUnitPercent').addEventListener('input', calculateWeights);
+            document.getElementById('air-eastUnitPercent').addEventListener('input', calculateWeights);
+            document.getElementById('air-centralUnitPercent').addEventListener('input', calculateWeights);
+            
+            // 初始化重量计算
+            calculateWeights();
+            
+            // 获取费率函数（根据POL和重量）
+            function getAirRate(pol, region, weight) {
+                const prefix = pol === 'HONGKONG' ? 'Hkg' : 'Pvg';
+                let weightCategory;
+                
+                if (weight <= 70) weightCategory = '70';
+                else if (weight <= 99) weightCategory = '99';
+                else weightCategory = '100';
+                
+                const rateId = `customTplPerKg${prefix}${region}${weightCategory}`;
+                return parseFloat(document.getElementById(rateId).value) || 0;
+            }
+            
+            // 获取快递费率函数
+            function getExpressRate(pol, weight) {
+                const prefix = pol === 'HONGKONG' ? 'Hkg' : 'Pvg';
+                let weightCategory;
+                
+                if (weight <= 70) weightCategory = '70';
+                else if (weight <= 99) weightCategory = '99';
+                else weightCategory = '100';
+                
+                const rateId = `customTplExpressPerKg${prefix}${weightCategory}`;
+                return parseFloat(document.getElementById(rateId).value) || 0;
+            }
+            
+            // 计算空运成本
+            function calculateAirCosts() {
+                // 验证输入
+                let tariffInput = airCustomTariffInput.value;
+                if (tariffInput.includes('%')) {
+                    tariffInput = tariffInput.replace('%', '');
+                }
+                const customTariff = parseFloat(tariffInput);
+                const westPercent = parseFloat(document.getElementById('air-westUnitPercent').value);
+                const eastPercent = parseFloat(document.getElementById('air-eastUnitPercent').value);
+                const centralPercent = parseFloat(document.getElementById('air-centralUnitPercent').value);
+                
+                let valid = true;
+                
+                if (airCategorySelect.value === 'custom' && (isNaN(customTariff) || customTariff < 0 || customTariff > 100)) {
+                    airTariffError.style.display = 'block';
+                    valid = false;
+                } else {
+                    airTariffError.style.display = 'none';
+                }
+                
+                if (isNaN(westPercent) || westPercent < 0 || westPercent > 100) {
+                    document.getElementById('air-westError').style.display = 'block';
+                    valid = false;
+                } else {
+                    document.getElementById('air-westError').style.display = 'none';
+                }
+                
+                if (isNaN(eastPercent) || eastPercent < 0 || eastPercent > 100) {
+                    document.getElementById('air-eastError').style.display = 'block';
+                    valid = false;
+                } else {
+                    document.getElementById('air-eastError').style.display = 'none';
+                }
+                
+                if (isNaN(centralPercent) || centralPercent < 0 || centralPercent > 100) {
+                    document.getElementById('air-centralError').style.display = 'block';
+                    valid = false;
+                } else {
+                    document.getElementById('air-centralError').style.display = 'none';
+                }
+                
+                if (!valid) {
+                    return;
+                }
+                
+                // 获取输入值
+                const pol = document.getElementById('air-pol').value;
+                const incoterm = document.getElementById('incoterm').value;
+                const units = parseInt(document.getElementById('units').value) || 5000;
+                const weightKg = parseFloat(document.getElementById('weightKg').value) || 200;
+                const volumeCBM = parseFloat(document.getElementById('volumeCBM').value) || 2;
+                const declareValueAGL = parseFloat(document.getElementById('declareValueAGL-air').value) || 1;
+                const declareValue3PL = parseFloat(document.getElementById('declareValue3PL-air').value) || 1;
+                const ibFeeWest = parseFloat(document.getElementById('ibFeeWest-air').value) || 0.68;
+                const exchangeRate = parseFloat(document.getElementById('customAirExchangeRate').value) || 7.2;
+                const tplSpecialCargo = parseFloat(document.getElementById('customTplSpecialCargo').value) || 0;
+                const tplExpressSpecialCargo = parseFloat(document.getElementById('customTplExpressSpecialCargo').value) || 0;
+                
+                // 获取关税率
+                let tariffRate;
+                if (airCategorySelect.value === 'custom') {
+                    tariffRate = customTariff / 100;
+                } else {
+                    tariffRate = tariffRates[airCategorySelect.value] || 0.35;
+                }
+                
+                // 重新计算重量
+                calculateWeights();
+                
+                // 获取重量值
+                const chargeableWeight = parseFloat(document.getElementById('chargeableWeight').value) || 0;
+                const chargeableWeightWC = parseFloat(document.getElementById('chargeableWeightWC').value) || 0;
+                const chargeableWeightEC = parseFloat(document.getElementById('chargeableWeightEC').value) || 0;
+                const chargeableWeightCC = parseFloat(document.getElementById('chargeableWeightCC').value) || 0;
+                
+                // 计算成本
+                // 1. AGL AMP
+                const ampRates = airAglRates[pol][incoterm]["AMP"];
+                const ampFixedFee = ampRates.fixed;
+                const ampPerKg = ampRates.perKg;
+                const ampPerKgTotal = chargeableWeight * ampPerKg;
+                const ampDuty = units * declareValueAGL * tariffRate;
+                const ampAirCost = ampFixedFee + ampPerKgTotal + ampDuty;
+                
+                // 2. AGL MSS
+                const mssRates = airAglRates[pol][incoterm]["MSS"];
+                const mssFixedFee = mssRates.fixed;
+                const mssPerKg = mssRates.perKg;
+                const mssPerKgTotal = chargeableWeight * mssPerKg;
+                const mssIBFee = ibFeeWest * units * exchangeRate;
+                const mssDuty = units * declareValueAGL * tariffRate;
+                const mssAirCost = mssFixedFee + mssPerKgTotal + mssIBFee + mssDuty;
+                
+                // 3. 3PL AOSS cost (duty incl.)
+                const wcRate = getAirRate(pol, 'Wc', chargeableWeightWC);
+                const ecRate = getAirRate(pol, 'Ec', chargeableWeightEC);
+                const ccRate = getAirRate(pol, 'Cc', chargeableWeightCC);
+                
+                const wcCost = chargeableWeightWC * wcRate;
+                const ecCost = chargeableWeightEC * ecRate;
+                const ccCost = chargeableWeightCC * ccRate;
+                const tplAossAirCost = wcCost + ecCost + ccCost + tplSpecialCargo;
+                
+                // 4. 3PL MSS (duty incl.)
+                const tplPerKgRate = getAirRate(pol, 'Wc', chargeableWeight); // 使用总重量
+                const tplPerKgTotal = chargeableWeight * tplPerKgRate;
+                const tplIBFee = ibFeeWest * units * exchangeRate;
+                const tplMssAirCost = tplPerKgTotal + tplIBFee + tplSpecialCargo;
+                
+                // 5. 3PL Express AOSS cost (duty excl. + duty)
+                const expressWcRate = getExpressRate(pol, chargeableWeightWC);
+                const expressEcRate = getExpressRate(pol, chargeableWeightEC);
+                const expressCcRate = getExpressRate(pol, chargeableWeightCC);
+                
+                const expressAossWestCost = chargeableWeightWC * expressWcRate;
+                const expressAossEastCost = chargeableWeightEC * expressEcRate;
+                const expressAossCentralCost = chargeableWeightCC * expressCcRate;
+                const expressAossDutyCost = units * declareValue3PL * tariffRate;
+                const expressAossAirCost = expressAossWestCost + expressAossEastCost + expressAossCentralCost + expressAossDutyCost + tplExpressSpecialCargo;
+                
+                // 6. 3PL Express MSS cost (duty excl. + duty)
+                const expressPerKgRate = getExpressRate(pol, chargeableWeight);
+                const expressPerKgTotal = chargeableWeight * expressPerKgRate;
+                const expressIBFee = ibFeeWest * units * exchangeRate;
+                const expressDutyCost = units * declareValue3PL * tariffRate;
+                const expressMssAirCost = expressPerKgTotal + expressIBFee + expressDutyCost + tplExpressSpecialCargo;
+                
+                // 更新结果
+                document.getElementById('ampAirCost').textContent = `¥${ampAirCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('mssAirCost').textContent = `¥${mssAirCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('tplAossAirCost').textContent = `¥${tplAossAirCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('tplMssAirCost').textContent = `¥${tplMssAirCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('expressAossAirCost').textContent = `¥${expressAossAirCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('expressMssAirCost').textContent = `¥${expressMssAirCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                
+                // 更新公式值
+                document.getElementById('ampFixedFee').textContent = ampFixedFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('ampPerKg').textContent = ampPerKgTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('ampDutyAir').textContent = ampDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('mssFixedFee').textContent = mssFixedFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('mssPerKg').textContent = mssPerKgTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('mssIBFee').textContent = mssIBFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('mssDutyAir').textContent = mssDuty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('aossWcCost').textContent = wcCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossEcCost').textContent = ecCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossCcCost').textContent = ccCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('aossSpecialCargo').textContent = tplSpecialCargo.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('tplPerKg').textContent = tplPerKgTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplIBFee').textContent = tplIBFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('tplSpecialCargo').textContent = tplSpecialCargo.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('expressAossWestCost').textContent = expressAossWestCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('expressAossEastCost').textContent = expressAossEastCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('expressAossCentralCost').textContent = expressAossCentralCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('expressAossDutyCost').textContent = expressAossDutyCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('expressAossSpecialCargo').textContent = tplExpressSpecialCargo.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                document.getElementById('expressPerKg').textContent = expressPerKgTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('expressIBFee').textContent = expressIBFee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('expressDutyCost').textContent = expressDutyCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                document.getElementById('expressSpecialCargo').textContent = tplExpressSpecialCargo.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                // 显示结果
+                airResultsSection.classList.remove('hidden');
+                airNoResultsSection.classList.add('hidden');
+            }
+            
+            // 空运计算按钮事件
+            document.getElementById('calculateAirBtn').addEventListener('click', calculateAirCosts);
+            
+            // 应用自定义海运费率
+            document.getElementById('applyCustomRatesBtn').addEventListener('click', function() {
+                currentOceanRates.tplWestFclRate = parseFloat(document.getElementById('customTplWestFclRate').value) || oceanPresetRates.tplWestFclRate;
+                currentOceanRates.tplEastFclRate = parseFloat(document.getElementById('customTplEastFclRate').value) || oceanPresetRates.tplEastFclRate;
+                currentOceanRates.tplCentralFclRate = parseFloat(document.getElementById('customTplCentralFclRate').value) || oceanPresetRates.tplCentralFclRate;
+                currentOceanRates.tplWestRmbPerKg = parseFloat(document.getElementById('customTplWestRmbPerKg').value) || oceanPresetRates.tplWestRmbPerKg;
+                currentOceanRates.tplEastRmbPerKg = parseFloat(document.getElementById('customTplEastRmbPerKg').value) || oceanPresetRates.tplEastRmbPerKg;
+                currentOceanRates.tplCentralRmbPerKg = parseFloat(document.getElementById('customTplCentralRmbPerKg').value) || oceanPresetRates.tplCentralRmbPerKg;
+                currentOceanRates.tplWestRmbPerCbm = parseFloat(document.getElementById('customTplWestRmbPerCbm').value) || oceanPresetRates.tplWestRmbPerCbm;
+                currentOceanRates.tplEastRmbPerCbm = parseFloat(document.getElementById('customTplEastRmbPerCbm').value) || oceanPresetRates.tplEastRmbPerCbm;
+                currentOceanRates.tplCentralRmbPerCbm = parseFloat(document.getElementById('customTplCentralRmbPerCbm').value) || oceanPresetRates.tplCentralRmbPerCbm;
+                currentOceanRates.exchangeRate = parseFloat(document.getElementById('customExchangeRate').value) || oceanPresetRates.exchangeRate;
+                
+                // 使用新费率重新计算
+                calculateCosts();
+                
+                alert('3PL Custom rates applied successfully!');
+            });
+            
+            // 重置海运费率
+            document.getElementById('resetToPresetBtn').addEventListener('click', function() {
+                currentOceanRates = {...oceanPresetRates};
+                
+                document.getElementById('customTplWestFclRate').value = oceanPresetRates.tplWestFclRate;
+                document.getElementById('customTplEastFclRate').value = oceanPresetRates.tplEastFclRate;
+                document.getElementById('customTplCentralFclRate').value = oceanPresetRates.tplCentralFclRate;
+                document.getElementById('customTplWestRmbPerKg').value = oceanPresetRates.tplWestRmbPerKg;
+                document.getElementById('customTplEastRmbPerKg').value = oceanPresetRates.tplEastRmbPerKg;
+                document.getElementById('customTplCentralRmbPerKg').value = oceanPresetRates.tplCentralRmbPerKg;
+                document.getElementById('customTplWestRmbPerCbm').value = oceanPresetRates.tplWestRmbPerCbm;
+                document.getElementById('customTplEastRmbPerCbm').value = oceanPresetRates.tplEastRmbPerCbm;
+                document.getElementById('customTplCentralRmbPerCbm').value = oceanPresetRates.tplCentralRmbPerCbm;
+                document.getElementById('customExchangeRate').value = oceanPresetRates.exchangeRate;
+                
+                // 使用预设费率重新计算
+                calculateCosts();
+                
+                alert('3PL Rates reset to preset values!');
+            });
+            
+            // 应用自定义空运费率
+            document.getElementById('applyAirCustomRatesBtn').addEventListener('click', function() {
+                // 更新3PL费率
+                currentAirRates.tplPerKgHkgWc70 = parseFloat(document.getElementById('customTplPerKgHkgWc70').value) || 49.03;
+                currentAirRates.tplPerKgHkgWc99 = parseFloat(document.getElementById('customTplPerKgHkgWc99').value) || 49.03;
+                currentAirRates.tplPerKgHkgWc100 = parseFloat(document.getElementById('customTplPerKgHkgWc100').value) || 48.02;
+                currentAirRates.tplPerKgHkgEc70 = parseFloat(document.getElementById('customTplPerKgHkgEc70').value) || 52.27;
+                currentAirRates.tplPerKgHkgEc99 = parseFloat(document.getElementById('customTplPerKgHkgEc99').value) || 52.27;
+                currentAirRates.tplPerKgHkgEc100 = parseFloat(document.getElementById('customTplPerKgHkgEc100').value) || 50.98;
+                currentAirRates.tplPerKgHkgCc70 = parseFloat(document.getElementById('customTplPerKgHkgCc70').value) || 51.26;
+                currentAirRates.tplPerKgHkgCc99 = parseFloat(document.getElementById('customTplPerKgHkgCc99').value) || 51.26;
+                currentAirRates.tplPerKgHkgCc100 = parseFloat(document.getElementById('customTplPerKgHkgCc100').value) || 50.04;
+                currentAirRates.tplPerKgPvgWc70 = parseFloat(document.getElementById('customTplPerKgPvgWc70').value) || 48.80;
+                currentAirRates.tplPerKgPvgWc99 = parseFloat(document.getElementById('customTplPerKgPvgWc99').value) || 42.30;
+                currentAirRates.tplPerKgPvgWc100 = parseFloat(document.getElementById('customTplPerKgPvgWc100').value) || 39.20;
+                currentAirRates.tplPerKgPvgEc70 = parseFloat(document.getElementById('customTplPerKgPvgEc70').value) || 52.80;
+                currentAirRates.tplPerKgPvgEc99 = parseFloat(document.getElementById('customTplPerKgPvgEc99').value) || 47.80;
+                currentAirRates.tplPerKgPvgEc100 = parseFloat(document.getElementById('customTplPerKgPvgEc100').value) || 44.68;
+                currentAirRates.tplPerKgPvgCc70 = parseFloat(document.getElementById('customTplPerKgPvgCc70').value) || 53.80;
+                currentAirRates.tplPerKgPvgCc99 = parseFloat(document.getElementById('customTplPerKgPvgCc99').value) || 48.80;
+                currentAirRates.tplPerKgPvgCc100 = parseFloat(document.getElementById('customTplPerKgPvgCc100').value) || 45.68;
+                
+                // 更新快递费率
+                currentAirRates.tplExpressPerKgHkg70 = parseFloat(document.getElementById('customTplExpressPerKgHkg70').value) || 47.52;
+                currentAirRates.tplExpressPerKgHkg99 = parseFloat(document.getElementById('customTplExpressPerKgHkg99').value) || 47.52;
+                currentAirRates.tplExpressPerKgHkg100 = parseFloat(document.getElementById('customTplExpressPerKgHkg100').value) || 47.52;
+                currentAirRates.tplExpressPerKgPvg70 = parseFloat(document.getElementById('customTplExpressPerKgPvg70').value) || 46.52;
+                currentAirRates.tplExpressPerKgPvg99 = parseFloat(document.getElementById('customTplExpressPerKgPvg99').value) || 46.52;
+                currentAirRates.tplExpressPerKgPvg100 = parseFloat(document.getElementById('customTplExpressPerKgPvg100').value) || 46.52;
+                
+                // 更新特殊货物附加费
+                currentAirRates.tplSpecialCargo = parseFloat(document.getElementById('customTplSpecialCargo').value) || 0;
+                currentAirRates.tplExpressSpecialCargo = parseFloat(document.getElementById('customTplExpressSpecialCargo').value) || 0;
+                
+                // 更新汇率
+                currentAirRates.exchangeRate = parseFloat(document.getElementById('customAirExchangeRate').value) || 7.2;
+                
+                // 使用新费率重新计算
+                calculateAirCosts();
+                
+                alert('Custom rates applied successfully!');
+            });
+            
+            // 重置空运费率
+            document.getElementById('resetAirToPresetBtn').addEventListener('click', function() {
+                currentAirRates = {...airPresetRates};
+                
+                // 重置所有输入字段
+                document.getElementById('customTplPerKgHkgWc70').value = 49.03;
+                document.getElementById('customTplPerKgHkgWc99').value = 49.03;
+                document.getElementById('customTplPerKgHkgWc100').value = 48.02;
+                document.getElementById('customTplPerKgHkgEc70').value = 52.27;
+                document.getElementById('customTplPerKgHkgEc99').value = 52.27;
+                document.getElementById('customTplPerKgHkgEc100').value = 50.98;
+                document.getElementById('customTplPerKgHkgCc70').value = 51.26;
+                document.getElementById('customTplPerKgHkgCc99').value = 51.26;
+                document.getElementById('customTplPerKgHkgCc100').value = 50.04;
+                document.getElementById('customTplPerKgPvgWc70').value = 48.80;
+                document.getElementById('customTplPerKgPvgWc99').value = 42.30;
+                document.getElementById('customTplPerKgPvgWc100').value = 39.20;
+                document.getElementById('customTplPerKgPvgEc70').value = 52.80;
+                document.getElementById('customTplPerKgPvgEc99').value = 47.80;
+                document.getElementById('customTplPerKgPvgEc100').value = 44.68;
+                document.getElementById('customTplPerKgPvgCc70').value = 53.80;
+                document.getElementById('customTplPerKgPvgCc99').value = 48.80;
+                document.getElementById('customTplPerKgPvgCc100').value = 45.68;
+                document.getElementById('customTplExpressPerKgHkg70').value = 45.62;
+                document.getElementById('customTplExpressPerKgHkg99').value = 44.81;
+                document.getElementById('customTplExpressPerKgHkg100').value = 44.81;
+                document.getElementById('customTplExpressPerKgPvg70').value = 47.62;
+                document.getElementById('customTplExpressPerKgPvg99').value = 46.81;
+                document.getElementById('customTplExpressPerKgPvg100').value = 46.81;
+                document.getElementById('customTplSpecialCargo').value = 0;
+                document.getElementById('customTplExpressSpecialCargo').value = 0;
+                document.getElementById('customAirExchangeRate').value = 7.2;
+                
+                // 使用预设费率重新计算
+                calculateAirCosts();
+                
+                alert('Rates reset to preset values!');
+            });
+        });
+    </script>
+</body>
+</html>
