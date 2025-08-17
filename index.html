@@ -50,13 +50,13 @@
             height: 100%;
             pointer-events: none;
             z-index: 9999;
-            opacity: 0.2;
+            opacity: 0.3;
             background-image: repeating-linear-gradient(
                 -30deg,
                 transparent,
                 transparent 40px,
-                rgba(255, 0, 0, 0.1) 40px,
-                rgba(255, 0, 0, 0.1) 80px
+                /* rgba(255, 0, 0, 0.1) 40px,
+                rgba(255, 0, 0, 0.1) 80px */
             );
         }
         
@@ -104,6 +104,13 @@
             padding: 20px;
             transition: var(--transition);
         }
+		
+		.scenario-description {
+			color: #0877C0; /* 蓝色文字 */
+			margin-top: 5px;
+			font-weight: normal;
+			display: block;
+		}
         
         .page-header {
             background: white;
@@ -425,6 +432,15 @@
             display: none;
         }
         
+		.cost-per-unit {
+			background-color: #0877C0; /* 浅蓝色背景 */
+			padding: 6px 8px;
+			border-radius: 4px;
+			margin-top: 5px;
+			color: #0877C0; /* 浅蓝色文字 */
+			font-size: 0.85rem;
+		}
+		
         .formula-breakdown {
             background: #f1f8ff;
             border-radius: 6px;
@@ -746,6 +762,10 @@
             border-collapse: collapse;
             margin: 15px 0;
             font-size: 0.9rem;
+			position: relative;
+            max-height: 400px;
+            overflow-y: auto;
+            display: block;
         }
         
         th, td {
@@ -758,6 +778,9 @@
             background-color: var(--primary);
             color: white;
             font-weight: 600;
+			position: sticky;
+            top: 0;
+            z-index: 10;
         }
         
         tr:nth-child(even) {
@@ -820,16 +843,131 @@
         /* For cargo detail and duty cost sections */
         .compact-row {
             display: flex;
-            flex-wrap: wrap;
+			flex-wrap: wrap; /* 允许换行 */
             gap: 12px;
             padding-bottom: 10px;
             margin-bottom: 18px;
+			width: 100%;
         }
-        
-        .compact-row .input-group {
-            min-width: 180px;
-            flex: 1 1 auto;
-        }
+		/* 输入组的基本样式 */
+		.compact-row .input-group {
+			flex: 1 1 auto;
+			min-width: 120px;
+			max-width: 100%;
+			padding: 15px;
+			background: #f8faff;
+			border-radius: 8px;
+			position: relative;
+		}
+		
+        /* 为特定输入组设置不同的flex比例 */
+		.compact-row .input-group:nth-child(1), /* POL */
+		.compact-row .input-group:nth-child(2) { /* Product Category & Tariff */
+			flex: 2 1 200px;
+		}
+
+		.compact-row .input-group:nth-child(3) { /* FCL Units */
+			flex: 1 1 120px;
+		}
+
+		.compact-row .input-group:nth-child(4), /* Shipment Volume */
+		.compact-row .input-group:nth-child(5), /* LCL Units per CBM */
+		.compact-row .input-group:nth-child(6) { /* LCL kg per CBM */
+			flex: 1 1 150px;
+		}
+
+		/* 标签样式 */
+		.compact-row .input-group label {
+			display: block;
+			margin-bottom: 8px;
+			font-weight: 600;
+			color: var(--primary);
+			font-size: 0.95rem;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		/* 输入框和下拉框样式 */
+		.compact-row select, 
+		.compact-row input {
+			width: 100%;
+			padding: 10px 12px;
+			font-size: 0.9rem;
+		}
+		
+		/* 响应式调整 - 中等屏幕 */
+		@media (max-width: 1200px) {
+			.compact-row .input-group {
+				flex: 1 1 200px;
+			}
+		}
+
+		/* 响应式调整 - 小屏幕 */
+		@media (max-width: 768px) {
+			.compact-row {
+				flex-direction: column;
+			}
+			
+			.compact-row .input-group {
+				flex: 1 1 100%;
+				min-width: 100%;
+			}
+		}
+		
+		/* 空运Calculated fields部分调整 */
+		#air-calculated-fields .compact-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			width: 100%;
+		}
+
+		#air-calculated-fields .input-group {
+			flex: 1 1 180px;
+			min-width: 120px;
+		}
+
+		/* 响应式调整 - 中等屏幕 */
+		@media (max-width: 1200px) {
+			#air-calculated-fields .input-group {
+				flex: 1 1 200px;
+			}
+		}
+
+		/* 响应式调整 - 小屏幕 */
+		@media (max-width: 768px) {
+			#air-calculated-fields .compact-row {
+				flex-direction: column;
+			}
+			
+			#air-calculated-fields .input-group {
+				flex: 1 1 100%;
+				min-width: 100%;
+			}
+		}
+		
+		/* For AGL LCL*/
+		#agl-lcl-container {
+			grid-template-columns: repeat(4, minmax(280px, 1fr));
+		}
+
+		@media (max-width: 1500px) {
+			#agl-lcl-container {
+				grid-template-columns: repeat(4, minmax(250px, 1fr));
+			}
+		}
+
+		@media (max-width: 1300px) {
+			#agl-lcl-container {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		@media (max-width: 768px) {
+			#agl-lcl-container {
+				grid-template-columns: 1fr;
+			}
+		}
         
         /* For 3PL LCL params */
         .compact-lcl-params {
@@ -1000,27 +1138,27 @@
             }
         }
     </style>
-	<script src="https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js"></script>
 </head>
 <body>
     <div class="watermark">
-        <div class="watermark-text" style="top: 15%; left: 5%;">For AGL internal, do not share</div>
-        <div class="watermark-text" style="top: 35%; left: 25%;">For AGL internal, do not share</div>
-        <div class="watermark-text" style="top: 55%; left: 45%;">For AGL internal, do not share</div>
-        <div class="watermark-text" style="top: 75%; left: 65%;">For AGL internal, do not share</div>
-        <div class="watermark-text" style="top: 95%; left: 85%;">For AGL internal, do not share</div>
-    </div>
+		<div class="watermark-text" style="top: 90%; left: 15%;">For internal, do not share</div>
+		<div class="watermark-text" style="top: 15%; left: 25%;">For internal, do not share</div>
+		<div class="watermark-text" style="top: 35%; left: 45%;">For internal, do not share</div>
+		<div class="watermark-text" style="top: 50%; left: 60%;">For internal, do not share</div>
+		<div class="watermark-text" style="top: 65%; left: 75%;">For internal, do not share</div>
+		<div class="watermark-text" style="top: 80%; left: 85%;">For internal, do not share</div>
+		<div class="watermark-text" style="top: 10%; left: 90%;">For internal, do not share</div>
+	</div>
     
     <div class="password-modal" id="passwordModal">
         <div class="password-container">
             <h2><i class="fas fa-lock"></i> Access Required</h2>
-            <p>Please enter the password to access AGL Sales Toolkits</p>
+			<p>Find latest release and user guide from this <a href="https://quip-amazon.com/6pfAA81Mtbkl#ZIC9AAT8P8V" target=“_blank” class="contact-link">Quip</a>.</p>
             <input type="password" id="passwordInput" placeholder="Enter password">
             <p class="error" id="passwordError" style="display:none;">Incorrect password. Please try again.</p>
             <button class="btn" id="passwordSubmit">
                 <i class="fas fa-unlock"></i> Unlock
             </button>
-            <p style="margin-top: 15px; font-size: 0.85rem;">Password format: aglc + month + day (e.g. aglc1003 for October 3)</p>
         </div>
     </div>
     
@@ -1074,7 +1212,7 @@
         <div class="page-content" id="ocean-page">
             <div class="page-header">
                 <h1><i class="fas fa-ship"></i> Ocean Freight Cost AGL vs. 3PL </h1>
-            </div>
+			</div>
             
             <div class="calculator-container">
                 <div class="tabs">
@@ -1082,6 +1220,10 @@
                     <div class="tab" data-tab="instructions">Instructions</div>
                 </div>
                 
+				<div class="scenario-description">
+					<p>1) Find latest release and user guide from this <a href="https://quip-amazon.com/6pfAA81Mtbkl#ZIC9AAT8P8V" target=“_blank” class="contact-link">Quip</a>. 2) AGL cost scenario coverage: Standard Ocean, DDP, Sort ONLY.</p>
+				</div>
+				
                 <div class="tab-content active" id="calculator-content">
                     <div class="panel" id="parameter-settings">
                         <h2><i class="fas fa-sliders-h"></i> Parameter Settings</h2>
@@ -1229,6 +1371,8 @@
                                             <div class="formula-line">Formula = AMP FCL Fixed fee (Import Clearance) + 40HC fee</div>
                                             <div class="formula-line">AMP FCL Fixed fee: $<span id="ampFclFixedBooking">0.00</span></div>
                                             <div class="formula-line">AMP 40HC fee: $<span id="ampFclBooking40HC">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="ampFclCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="ampFclCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1240,6 +1384,8 @@
                                             <div class="formula-line">MSS Fixed fee: $<span id="aglMssFixedWest">0.00</span></div>
                                             <div class="formula-line">MSS 40HC fee: $<span id="aglMss40HCWest">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="aglMssIBWest">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="mssFclWestCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="mssFclWestCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1251,6 +1397,8 @@
                                             <div class="formula-line">MSS Fixed fee: $<span id="aglMssFixedEast">0.00</span></div>
                                             <div class="formula-line">MSS 40HC fee: $<span id="aglMss40HCEast">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="aglMssIBEast">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="mssFclEastCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="mssFclEastCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1264,6 +1412,8 @@
                                             <div class="formula-line">West cost: $<span id="aossWestCost">0.00</span></div>
                                             <div class="formula-line">East cost: $<span id="aossEastCost">0.00</span></div>
                                             <div class="formula-line">Central cost: $<span id="aossCentralCost">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="aossFclCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="aossFclCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1274,6 +1424,8 @@
                                             <div class="formula-line">Formula = 3PL FCL West rate + (Units × West IB fee)</div>
                                             <div class="formula-line">3PL FCL West rate: $<span id="tplWestFixed">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="tplWestIB">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="tplWestCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="tplWestCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1284,12 +1436,14 @@
                                             <div class="formula-line">Formula = 3PL FCL East rate + (Units × East IB fee)</div>
                                             <div class="formula-line">3PL FCL East rate: $<span id="tplEastFixed">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="tplEastIB">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="tplEastCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="tplEastCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="comparison-subtitle" id="lcl-results">LCL with IB fee and duty</div>
-                                <div class="comparison-results">
+                                <div id="agl-lcl-container" class="comparison-results">
                                     <div class="comparison-card agl">
                                         <h4>AGL AMP LCL</h4>
                                         <div class="value" id="ampLclCost">$0.00</div>
@@ -1298,6 +1452,8 @@
                                             <div class="formula-line">AMP LCL Fixed fee: $<span id="ampLclFixed">0.00</span></div>
                                             <div class="formula-line">AMP LCL $ per CBM total: $<span id="ampLclRate">0.00</span></div>
                                             <div class="formula-line">Duty cost: $<span id="ampLclDuty">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="ampLclCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="ampLclCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1305,7 +1461,7 @@
                                         <h4>AGL SMP LCL</h4>
                                         <div class="value" id="smpLclCost">$0.00</div>
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = ((SMP LCL Fixed rate (Import + Export Clearance) × 5) + (SMP LCL $ per CBM x Volume x Regional%) + (Volume × LCL units per CBM × AGL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">Formula = ((SMP LCL Fixed rate (Import + Export Clearance) × 5) + (SMP LCL $ per CBM x Max(Volume x Regional%, 1)) + (Volume × LCL units per CBM × AGL Declared Value × Tariff rate)</div>
                                             <div class="formula-line">SMP Fixed fee: $<span id="smpFixedFee">0.00</span></div>
                                             <div class="formula-line">West cost: $<span id="smpWestCost">0.00</span></div>
                                             <div class="formula-line">Mid-East cost: $<span id="smpMidEastCost">0.00</span></div>
@@ -1313,6 +1469,8 @@
                                             <div class="formula-line">North East cost: $<span id="smpNorthEastCost">0.00</span></div>
                                             <div class="formula-line">Central cost: $<span id="smpCentralCost">0.00</span></div>
                                             <div class="formula-line">Duty cost: $<span id="smpDuty">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="smpLclCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="smpLclCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1325,6 +1483,8 @@
                                             <div class="formula-line">MSS LCL $ per CBM total: $<span id="aglMssLclWestRate">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="aglMssLclWestIB">0.00</span></div>
                                             <div class="formula-line">Duty cost: $<span id="aglMssLclWestDuty">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="aglMssLclWestCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="aglMssLclWestCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1337,6 +1497,8 @@
                                             <div class="formula-line">MSS LCL $ per CBM total: $<span id="aglMssLclEastRate">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="aglMssLclEastIB">0.00</span></div>
                                             <div class="formula-line">Duty cost: $<span id="aglMssLclEastDuty">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="aglMssLclEastCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="aglMssLclEastCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1346,10 +1508,12 @@
                                         <h4>3PL AOSS LCL (duty incl.)</h4>
                                         <div class="value" id="tplAossLclDutyIncluded">$0.00</div>
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = ((3PL West RMB/kg x Volume x West% x LCL kg per CBM) + (3PL East RMB/kg x Volume x East% x LCL kg per CBM) + (3PL Central RMB/kg x Volume x Central% x LCL kg per CBM))/Exchange</div>
+                                            <div class="formula-line">Formula = ((3PL West RMB/kg x Max(Volume x West% x LCL kg per CBM, 50kg)) + (3PL East RMB/kg x Max(Volume x East% x LCL kg per CBM, 50kg)) + (3PL Central RMB/kg x Max(Volume x Central% x LCL kg per CBM, 50kg)))/Exchange</div>
                                             <div class="formula-line">West cost: $<span id="aossLclWestCost">0.00</span></div>
                                             <div class="formula-line">East cost: $<span id="aossLclEastCost">0.00</span></div>
                                             <div class="formula-line">Central cost: $<span id="aossLclCentralCost">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="tplaossLclDutyIncludedCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="tplaossLclDutyIncludedCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1357,9 +1521,11 @@
                                         <h4>3PL MSS LCL - West (duty incl.)</h4>
                                         <div class="value" id="tplMssLclWestDutyIncl">$0.00</div>
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = (3PL West RMB/kg x Volume x LCL kg per CBM)/Exchange + (Units × West IB fee)</div>
+                                            <div class="formula-line">Formula = (3PL West RMB/kg x Max(Volume x LCL kg per CBM, 50kg))/Exchange + (Units × West IB fee)</div>
                                             <div class="formula-line">Base freight: $<span id="tplMssLclWestBaseDutyIncl">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="tplMssLclWestIBDutyIncl">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="tplMssLclWestDutyInclCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="tplMssLclWestDutyInclCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1367,9 +1533,11 @@
                                         <h4>3PL MSS LCL - East (duty incl.)</h4>
                                         <div class="value" id="tplMssLclEastDutyIncl">$0.00</div>
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = (3PL East RMB/kg x Volume x LCL kg per CBM)/Exchange + (Units × East IB fee)</div>
+                                            <div class="formula-line">Formula = (3PL East RMB/kg x Max(Volume x LCL kg per CBM, 50kg))/Exchange + (Units × East IB fee)</div>
                                             <div class="formula-line">Base freight: $<span id="tplMssLclEastBaseDutyIncl">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="tplMssLclEastIBDutyIncl">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="tplMssLclEastDutyInclCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="tplMssLclEastDutyInclCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1379,11 +1547,13 @@
                                         <h4>3PL AOSS LCL (duty excl.) + duty</h4>
                                         <div class="value" id="tplAossLclWithoutDuty">$0.00</div>
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = ((3PL West RMB/CBM x Volume x West%) + (3PL East RMB/CBM x Volume x East%) + (3PL Central RMB/CBM x Volume x Central%))/Exchange + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">Formula = ((3PL West RMB/CBM x Max(Volume x West%, 0.5cbm)) + (3PL East RMB/CBM x Max(Volume x East%, 0.5cbm)) + (3PL Central RMB/CBM x Max(Volume x Central%, 5cbm))/Exchange + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
                                             <div class="formula-line">West cost: $<span id="aossLclWestCost2">0.00</span></div>
                                             <div class="formula-line">East cost: $<span id="aossLclEastCost2">0.00</span></div>
                                             <div class="formula-line">Central cost: $<span id="aossLclCentralCost2">0.00</span></div>
                                             <div class="formula-line">Duty cost: $<span id="aossLclDuty">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="tplAossLclWithoutDutyCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="tplAossLclWithoutDutyCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1391,10 +1561,12 @@
                                         <h4>3PL MSS LCL - West (duty excl.) + duty</h4>
                                         <div class="value" id="tplMssLclWestCost">$0.00</div>
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = (3PL West RMB/CBM × Volume)/Exchange + (Volume × LCL Unit per CBM × West IB fee) + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">Formula = (3PL West RMB/CBM × Max(Volume, 0.5cbm))/Exchange + (Volume × LCL Unit per CBM × West IB fee) + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
                                             <div class="formula-line">Base freight: $<span id="tplMssLclWestBase">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="tplMssLclWestIB">0.00</span></div>
                                             <div class="formula-line">Duty cost: $<span id="tplMssLclWestDuty">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="tplMssLclWestCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="tplMssLclWestCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1402,10 +1574,12 @@
                                         <h4>3PL MSS LCL - East (duty excl.) + duty</h4>
                                         <div class="value" id="tplMssLclEastCost">$0.00</div>
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = (3PL East RMB/CBM × Volume)/Exchange + (Volume × LCL Unit per CBM × East IB fee) + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
+                                            <div class="formula-line">Formula = (3PL East RMB/CBM × Max(Volume, 0.5cbm))/Exchange + (Volume × LCL Unit per CBM × East IB fee) + (Volume × LCL units per CBM × 3PL Declared Value × Tariff rate)</div>
                                             <div class="formula-line">Base freight: $<span id="tplMssLclEastBase">0.00</span></div>
                                             <div class="formula-line">IB fee: $<span id="tplMssLclEastIB">0.00</span></div>
                                             <div class="formula-line">Duty cost: $<span id="tplMssLclEastDuty">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per KG: $<span id="tplMssLclEastCostPerKg">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per CBM: $<span id="tplMssLclEastCostPerCbm">0.00</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1445,7 +1619,7 @@
                         <div class="sub-section-description">Duty inclusive RMB/kg, not duty inclusive RMB/CBM, fixed cost RMB/booking</div>
                         <div class="compact-lcl-params" id="tpl-lcl-params">
                             <div class="param-item">
-                                <label>3PL EC RMB/kg (duty incl.)</label>
+                                <label>3PL WC RMB/kg (duty incl.)</label>
                                 <input type="number" id="customTplWestRmbPerKg" value="5.1">
                             </div>
                             <div class="param-item">
@@ -1516,7 +1690,7 @@
                             <tbody>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1528,7 +1702,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1540,7 +1714,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1552,7 +1726,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1564,7 +1738,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1576,7 +1750,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1588,7 +1762,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1600,7 +1774,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1612,7 +1786,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1624,7 +1798,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1634,6 +1808,152 @@
                                     <td>106</td>
                                     <td>8555</td>
                                 </tr>
+								
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>NINGBO</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4256</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>YANTIAN</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4199</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>SHANGHAI</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4259</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>XIAMEN</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4249</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>QINGDAO</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4250</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>TIANJIN</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4259</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>FUZHOU</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4242</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>HONGKONG</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4224</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>ZHUHAI</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4249</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>LIANYUNGANG</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>4250</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>NINGBO</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5531</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>YANTIAN</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5474</td>
+								</tr>
+								
                             </tbody>
                         </table>
                         
@@ -1660,7 +1980,7 @@
                             <tbody>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1676,7 +1996,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1692,7 +2012,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1708,7 +2028,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1724,7 +2044,7 @@
                                 </tr>
                                 <tr>
                                     <td>US</td>
-                                    <td>Standard Ocean</td>
+                                    <td>SO</td>
                                     <td>USD</td>
                                     <td>AMP</td>
                                     <td>non-FOB</td>
@@ -1738,6 +2058,169 @@
                                     <td>162.4</td>
                                     <td>162.4</td>
                                 </tr>
+								
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>NINGBO</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>10.6666</td>
+									<td>76</td>
+									<td>89.1597</td>
+									<td>89.1597</td>
+									<td>89.1597</td>
+									<td>89.1597</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>SHANGHAI</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>13.3333</td>
+									<td>76</td>
+									<td>88.6791</td>
+									<td>88.6791</td>
+									<td>88.6791</td>
+									<td>88.6791</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>XIAMEN</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>17.7777</td>
+									<td>76</td>
+									<td>89.0402</td>
+									<td>89.0402</td>
+									<td>89.0402</td>
+									<td>89.0402</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>QINGDAO</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>20.4444</td>
+									<td>76</td>
+									<td>87.6944</td>
+									<td>87.6944</td>
+									<td>87.6944</td>
+									<td>87.6944</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>SHENZHEN</td>
+									<td>US West</td>
+									<td>Sort</td>
+									<td>24.8888</td>
+									<td>76</td>
+									<td>90.65</td>
+									<td>90.65</td>
+									<td>90.65</td>
+									<td>90.65</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>NINGBO</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>10.6666</td>
+									<td>76</td>
+									<td>118.0569</td>
+									<td>118.0569</td>
+									<td>118.0569</td>
+									<td>118.0569</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>SHANGHAI</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>13.3333</td>
+									<td>76</td>
+									<td>117.5986</td>
+									<td>117.5986</td>
+									<td>117.5986</td>
+									<td>117.5986</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>XIAMEN</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>17.7777</td>
+									<td>76</td>
+									<td>118.1152</td>
+									<td>118.1152</td>
+									<td>118.1152</td>
+									<td>118.1152</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>QINGDAO</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>20.4444</td>
+									<td>76</td>
+									<td>114.8875</td>
+									<td>114.8875</td>
+									<td>114.8875</td>
+									<td>114.8875</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>SHENZHEN</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>24.8888</td>
+									<td>76</td>
+									<td>122.2083</td>
+									<td>122.2083</td>
+									<td>122.2083</td>
+									<td>122.2083</td>
+								</tr>
+								
+								
                             </tbody>
                         </table>
                         
@@ -1776,9 +2259,12 @@
                     <div class="tab active" data-tab="air-calculator">Cost Comparator</div>
                     <div class="tab" data-tab="air-instructions">Instructions</div>
                 </div>
-                
+                <div class="scenario-description">
+					<p>Find latest release and user guide from this <a href="https://quip-amazon.com/6pfAA81Mtbkl#ZIC9AAT8P8V" target=“_blank” class="contact-link">Quip</a>.</p>
+				</div>
+				
                 <div class="tab-content active" id="air-calculator-content">
-                    <div class="panel" id="parameter-settings">
+                    <div class="panel" id="parameter-settings-air">
                         <h2><i class="fas fa-sliders-h"></i> Parameter Settings</h2>
                         
                         <div class="section-title">Cargo Detail</div>
@@ -1895,24 +2381,24 @@
                                 </div>
                                 
                                 <div class="weight-group">
-                                    <label>Chargeable weight (KG, MAX(Weight,Volume weight))</label>
+                                    <label>Chargeable weight (KG, Max(Weight,Volume weight,50))</label>
                                     <input type="text" id="chargeableWeight" disabled value="0">
                                 </div>
                             </div>
                             
                             <div class="weight-row">
                                 <div class="weight-group">
-                                    <label>Chargeable weight (WC) (KG)</label>
+                                    <label>Chargeable weight (WC) (KG, chargeable weight x WC%)</label>
                                     <input type="text" id="chargeableWeightWC" disabled value="0">
                                 </div>
                                 
                                 <div class="weight-group">
-                                    <label>Chargeable weight (EC) (KG)</label>
+                                    <label>Chargeable weight (EC) (KG, chargeable weight x EC%)</label>
                                     <input type="text" id="chargeableWeightEC" disabled value="0">
                                 </div>
                                 
                                 <div class="weight-group">
-                                    <label>Chargeable weight (CC) (KG)</label>
+                                    <label>Chargeable weight (CC) (KG, chargeable weight x CC%)</label>
                                     <input type="text" id="chargeableWeightCC" disabled value="0">
                                 </div>
                             </div>
@@ -1936,10 +2422,11 @@
                                         <div class="value" id="ampAirCost">¥0.00</div>
                                         
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = [AMP Fixed Fee] + (Chargeable weight × [AMP per KG]) + (Units × Declared Value RMB/Unit - AGL × Tariff rate)</div>
+                                            <div class="formula-line">Formula = AMP Fixed Fee + (Chargeable weight × AMP per KG) + (Units × AGL Declared Value RMB/Unit × Tariff rate)</div>
                                             <div class="formula-line">Fixed fee: ¥<span id="ampFixedFee">0.00</span></div>
                                             <div class="formula-line">Per KG fee total: ¥<span id="ampPerKg">0.00</span></div>
                                             <div class="formula-line">Duty cost: ¥<span id="ampDutyAir">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per chargeable KG: ¥<span id="ampAirCostPerKg">0.00</span></div>
                                         </div>
                                     </div>
                                     
@@ -1948,11 +2435,12 @@
                                         <div class="value" id="mssAirCost">¥0.00</div>
                                         
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = [MSS Fixed Fee] + (Chargeable weight × [MSS per KG]) + (IB Fee × Units × Exchange) + (Units × Declared Value RMB/Unit - AGL × Tariff rate)</div>
+                                            <div class="formula-line">Formula = MSS Fixed Fee + (Chargeable weight × MSS per KG) + (IB Fee × Units × Exchange) + (Units × AGL Declared Value RMB/Unit × Tariff rate)</div>
                                             <div class="formula-line">Fixed fee: ¥<span id="mssFixedFee">0.00</span></div>
                                             <div class="formula-line">Per KG fee total: ¥<span id="mssPerKg">0.00</span></div>
                                             <div class="formula-line">IB fee: ¥<span id="mssIBFee">0.00</span></div>
                                             <div class="formula-line">Duty cost: ¥<span id="mssDutyAir">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per chargeable KG: ¥<span id="mssAirCostPerKg">0.00</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1963,50 +2451,54 @@
                                         <div class="value" id="tplAossAirCost">¥0.00</div>
                                         
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = (WC weight × WC rate) + (EC weight × EC rate) + (CC weight × CC rate) + Special cargo surcharge</div>
+                                            <div class="formula-line">Formula = (Chargeable weight x WC% × 3PL WC rate) + (Chargeable weight x EC% × 3PL EC rate) + (Chargeable weight x CC% × 3PL CC rate) + Special cargo surcharge</div>
                                             <div class="formula-line">WC cost: ¥<span id="aossWcCost">0.00</span></div>
                                             <div class="formula-line">EC cost: ¥<span id="aossEcCost">0.00</span></div>
                                             <div class="formula-line">CC cost: ¥<span id="aossCcCost">0.00</span></div>
                                             <div class="formula-line">Special cargo surcharge: ¥<span id="aossSpecialCargo">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per chargeable KG: ¥<span id="tplAossAirCostPerKg">0.00</span></div>
                                         </div>
                                     </div>
                                     
                                     <div class="comparison-card tpl">
-                                        <h4>3PL MSS (duty incl.)</h4>
+                                        <h4>3PL MSS - West (duty incl.)</h4>
                                         <div class="value" id="tplMssAirCost">¥0.00</div>
                                         
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = (Chargeable weight × [3PL per KG]) + (IB Fee × Units × Exchange) + Special cargo surcharge</div>
+                                            <div class="formula-line">Formula = (Chargeable weight × 3PL West per KG) + (IB Fee × Units × Exchange) + Special cargo surcharge</div>
                                             <div class="formula-line">Per KG fee total: ¥<span id="tplPerKg">0.00</span></div>
                                             <div class="formula-line">IB fee: ¥<span id="tplIBFee">0.00</span></div>
                                             <div class="formula-line">Special cargo surcharge: ¥<span id="tplSpecialCargo">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per chargeable KG: ¥<span id="tplMssAirCostPerKg">0.00</span></div>
                                         </div>
                                     </div>
                                     
                                     <div class="comparison-card tpl">
-                                        <h4>3PL Express AOSS cost (duty excl. + duty)</h4>
+                                        <h4>3PL Express AOSS (duty excl. + duty)</h4>
                                         <div class="value" id="expressAossAirCost">¥0.00</div>
                                         
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = (WC weight × Express rate) + (EC weight × Express rate) + (CC weight × Express rate) + (Units × Declared Value RMB/Unit - 3PL × Tariff rate) + Special cargo surcharge</div>
+                                            <div class="formula-line">Formula = (Chargeable weight x WC% × Express WC rate) + (Chargeable weight x EC% × Express EC rate) + (Chargeable weight x CC% × Express CC rate) + (3PL Declared Value RMB/Unit × Units × Tariff rate) + Special cargo surcharge</div>
                                             <div class="formula-line">West cost: ¥<span id="expressAossWestCost">0.00</span></div>
                                             <div class="formula-line">East cost: ¥<span id="expressAossEastCost">0.00</span></div>
                                             <div class="formula-line">Central cost: ¥<span id="expressAossCentralCost">0.00</span></div>
                                             <div class="formula-line">Duty cost: ¥<span id="expressAossDutyCost">0.00</span></div>
                                             <div class="formula-line">Special cargo surcharge: ¥<span id="expressAossSpecialCargo">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per chargeable KG: ¥<span id="tplexpressAossAirCostPerKg">0.00</span></div>
                                         </div>
                                     </div>
                                     
                                     <div class="comparison-card tpl">
-                                        <h4>3PL Express MSS cost (duty excl. + duty)</h4>
+                                        <h4>3PL Express MSS - West (duty excl. + duty)</h4>
                                         <div class="value" id="expressMssAirCost">¥0.00</div>
                                         
                                         <div class="formula-breakdown">
-                                            <div class="formula-line">Formula = (Chargeable weight × [3PL Express per KG]) + (IB Fee × Units × Exchange) + (Units × Declared Value RMB/Unit - 3PL × Tariff rate) + Special cargo surcharge</div>
+                                            <div class="formula-line">Formula = (Chargeable weight × Express West per KG) + (IB Fee × Units × Exchange) + (3PL Declared Value RMB/Unit × Units × Tariff rate) + Special cargo surcharge</div>
                                             <div class="formula-line">Per KG fee total: ¥<span id="expressPerKg">0.00</span></div>
                                             <div class="formula-line">IB fee: ¥<span id="expressIBFee">0.00</span></div>
                                             <div class="formula-line">Duty cost: ¥<span id="expressDutyCost">0.00</span></div>
                                             <div class="formula-line">Special cargo surcharge: ¥<span id="expressSpecialCargo">0.00</span></div>
+											<div class="formula-line cost-per-unit">Total cost per chargeable KG: ¥<span id="tplexpressMssAirCostPerKg">0.00</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2022,7 +2514,7 @@
                         </div>
                     </div>
                     
-                    <div class="custom-params-panel">
+                    <div class="custom-params-panel" id="tpl-custom-air">
                         <h3>3PL Rate Customization</h3>
                         
                         <div class="air-param-group">
@@ -2032,75 +2524,75 @@
                                 <div class="param-grid">
                                     <div class="param-item">
                                         <label>HKG-WC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgHkgWc70" value="49.03">
+                                        <input type="number" id="customTplPerKgHkgWc70" value="51.48">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-WC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgHkgWc99" value="49.03">
+                                        <input type="number" id="customTplPerKgHkgWc99" value="51.48">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-WC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgHkgWc100" value="48.02">
+                                        <input type="number" id="customTplPerKgHkgWc100" value="50.47">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-EC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgHkgEc70" value="52.27">
+                                        <input type="number" id="customTplPerKgHkgEc70" value="54.72">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-EC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgHkgEc99" value="52.27">
+                                        <input type="number" id="customTplPerKgHkgEc99" value="54.72">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-EC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgHkgEc100" value="50.98">
+                                        <input type="number" id="customTplPerKgHkgEc100" value="53.50">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-CC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgHkgCc70" value="51.26">
+                                        <input type="number" id="customTplPerKgHkgCc70" value="53.78">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-CC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgHkgCc99" value="51.26">
+                                        <input type="number" id="customTplPerKgHkgCc99" value="53.78">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-CC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgHkgCc100" value="50.04">
+                                        <input type="number" id="customTplPerKgHkgCc100" value="52.49">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-WC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgPvgWc70" value="48.80">
+                                        <input type="number" id="customTplPerKgPvgWc70" value="45.80">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-WC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgPvgWc99" value="42.30">
+                                        <input type="number" id="customTplPerKgPvgWc99" value="45.80">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-WC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgPvgWc100" value="39.20">
+                                        <input type="number" id="customTplPerKgPvgWc100" value="41.69">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-EC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgPvgEc70" value="52.80">
+                                        <input type="number" id="customTplPerKgPvgEc70" value="47.81">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-EC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgPvgEc99" value="47.80">
+                                        <input type="number" id="customTplPerKgPvgEc99" value="47.81">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-EC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgPvgEc100" value="44.68">
+                                        <input type="number" id="customTplPerKgPvgEc100" value="44.71">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-CC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgPvgCc70" value="53.80">
+                                        <input type="number" id="customTplPerKgPvgCc70" value="46.8">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-CC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgPvgCc99" value="48.80">
+                                        <input type="number" id="customTplPerKgPvgCc99" value="46.8">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-CC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgPvgCc100" value="45.68">
+                                        <input type="number" id="customTplPerKgPvgCc100" value="43.70">
                                     </div>
                                     
                                     <div class="param-item special-cargo-item">
@@ -2116,27 +2608,27 @@
                                 <div class="param-grid">
                                     <div class="param-item">
                                         <label>HKG &lt;=70KG</label>
-                                        <input type="number" id="customTplExpressPerKgHkg70" value="47.52">
+                                        <input type="number" id="customTplExpressPerKgHkg70" value="52.56">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG 71-99KG</label>
-                                        <input type="number" id="customTplExpressPerKgHkg99" value="47.52">
+                                        <input type="number" id="customTplExpressPerKgHkg99" value="52.56">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG &gt;=100KG</label>
-                                        <input type="number" id="customTplExpressPerKgHkg100" value="47.52">
+                                        <input type="number" id="customTplExpressPerKgHkg100" value="51.84">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG &lt;=70KG</label>
-                                        <input type="number" id="customTplExpressPerKgPvg70" value="46.52">
+                                        <input type="number" id="customTplExpressPerKgPvg70" value="51.56">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG 71-99KG</label>
-                                        <input type="number" id="customTplExpressPerKgPvg99" value="46.52">
+                                        <input type="number" id="customTplExpressPerKgPvg99" value="51.56">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG &gt;=100KG</label>
-                                        <input type="number" id="customTplExpressPerKgPvg100" value="46.52">
+                                        <input type="number" id="customTplExpressPerKgPvg100" value="50.84">
                                     </div>
                                     
                                     <div class="param-item special-cargo-item">
@@ -2171,7 +2663,7 @@
                         <h3><i class="fas fa-info-circle"></i> Air Freight Cost Calculator Instructions</h3>
                         
                         <div class="file-info">
-                            <h4>AGL Rate Card Version: 5/14/2025 (for pilot launch)</h4>
+                            <h4>AGL Rate Card Version: 8/9/2025 (first version full launch)</h4>
                         </div>
                         
                         <h3>AGL Rate Card</h3>
@@ -2192,64 +2684,64 @@
                                     <td>DDP/EXW</td>
                                     <td>MSS</td>
                                     <td>HongKong</td>
-                                    <td>805</td>
-                                    <td>46</td>
+                                    <td>804.800</td>
+                                    <td>46.885</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>DDP/EXW</td>
                                     <td>MSS</td>
                                     <td>Shanghai</td>
-                                    <td>705</td>
-                                    <td>35</td>
+                                    <td>704.800</td>
+                                    <td>46.665</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>DDP/EXW</td>
                                     <td>AMP</td>
                                     <td>HongKong</td>
-                                    <td>805</td>
-                                    <td>54</td>
+                                    <td>804.800</td>
+                                    <td>54.845</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>DDP/EXW</td>
                                     <td>AMP</td>
                                     <td>Shanghai</td>
-                                    <td>705</td>
-                                    <td>43</td>
+                                    <td>704.800</td>
+                                    <td>54.625</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>FOB</td>
                                     <td>MSS</td>
                                     <td>HongKong</td>
-                                    <td>555</td>
-                                    <td>43</td>
+                                    <td>554.800</td>
+                                    <td>41.385</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>FOB</td>
                                     <td>MSS</td>
                                     <td>Shanghai</td>
-                                    <td>555</td>
-                                    <td>34</td>
+                                    <td>554.800</td>
+                                    <td>45.665</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>FOB</td>
                                     <td>AMP</td>
                                     <td>HongKong</td>
-                                    <td>555</td>
-                                    <td>51</td>
+                                    <td>554.800</td>
+                                    <td>49.345</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>FOB</td>
                                     <td>AMP</td>
                                     <td>Shanghai</td>
-                                    <td>555</td>
-                                    <td>42</td>
+                                    <td>554.800</td>
+                                    <td>53.625</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -2305,8 +2797,8 @@
             <div class="placeholder">
                 <i class="fas fa-home"></i>
                 <h3>Welcome to AGL Sales Toolkits</h3>
-                <p>Select a tool from the sidebar to get started with logistics cost calculations and comparisons.</p>
-				<p style="margin-top: 20px;">Leave your comments in this <a href="https://quip-amazon.com/TZpMAROheGCD/Sales-toolkits-file-feedback-collection#temp:C:eST35ab56906c3a4b788f3b5904a" target=“_blank” class="contact-link">Quip</a> for our continual improvement.</p>
+                <p>Select a tool from the sidebar to get started.</p>
+				<p style="margin-top: 20px;">Find the latest version and guidebook from this <a href="https://quip-amazon.com/6pfAA81Mtbkl#ZIC9AAT8P8V" target=“_blank” class="contact-link">Quip</a> and feedback your comments if any.</p>
             </div>
         </div>
     </div>
@@ -2320,12 +2812,25 @@
     </div>
     
     <div class="floating-nav air-floating-nav" style="display: none;">
-        <button class="floating-btn" onclick="scrollToSection('parameter-settings')">Parameter Settings</button>
+        <button class="floating-btn" onclick="scrollToSection('parameter-settings-air')">Parameter Settings</button>
         <button class="floating-btn" onclick="scrollToSection('air-resultsSection')">Calculation Results</button>
-        <button class="floating-btn" onclick="scrollToSection('tpl-custom')">3PL Rate Customization</button>
+        <button class="floating-btn" onclick="scrollToSection('tpl-custom-air')">3PL Rate Customization</button>
     </div>
 
     <script>
+	// 自定义alert函数
+function customAlert(message) {
+    const modal = document.getElementById('customAlertModal');
+    const messageElement = document.getElementById('customAlertMessage');
+    const okButton = document.getElementById('customAlertOK');
+    
+    messageElement.textContent = message;
+    modal.style.display = 'flex';
+    
+    okButton.onclick = function() {
+        modal.style.display = 'none';
+    };
+}
         // Password validation logic
         document.addEventListener('DOMContentLoaded', function() {
             const passwordModal = document.getElementById('passwordModal');
@@ -2385,12 +2890,12 @@
                 tplPerKgPvgWc70: 51.80,
                 tplPerKgPvgWc99: 46.80,
                 tplPerKgPvgWc100: 42.68,
-                tplPerKgPvgEc70: 52.80,
-                tplPerKgPvgEc99: 47.80,
-                tplPerKgPvgEc100: 44.68,
-                tplPerKgPvgCc70: 53.80,
-                tplPerKgPvgCc99: 48.80,
-                tplPerKgPvgCc100: 45.68,
+                tplPerKgPvgEc70: 47.81,
+                tplPerKgPvgEc99: 47.81,
+                tplPerKgPvgEc100: 44.71,
+                tplPerKgPvgCc70: 46.8,
+                tplPerKgPvgCc99: 46.8,
+                tplPerKgPvgCc100: 43.70,
                 tplExpressPerKgHkg70: 45.62,
                 tplExpressPerKgHkg99: 44.81,
                 tplExpressPerKgHkg100: 44.81,
@@ -2494,30 +2999,30 @@
             const airAglRates = {
                 "HONGKONG": {
                     "DDP": {
-                        "MSS": { fixed: 805, perKg: 46 },
-                        "AMP": { fixed: 805, perKg: 54 }
+                        "MSS": { fixed: 804.800, perKg: 46.885 },
+                        "AMP": { fixed: 804.800, perKg: 54.845 }
                     },
                     "EXW": {
-                        "MSS": { fixed: 805, perKg: 46 },
-                        "AMP": { fixed: 805, perKg: 54 }
+                        "MSS": { fixed: 804.800, perKg: 46.885 },
+                        "AMP": { fixed: 804.800, perKg: 54.845 }
                     },
                     "FOB": {
-                        "MSS": { fixed: 555, perKg: 43 },
-                        "AMP": { fixed: 555, perKg: 51 }
+                        "MSS": { fixed: 554.800, perKg: 41.385 },
+                        "AMP": { fixed: 554.800, perKg: 49.345 }
                     }
                 },
                 "SHANGHAI": {
                     "DDP": {
-                        "MSS": { fixed: 705, perKg: 35 },
-                        "AMP": { fixed: 705, perKg: 43 }
+                        "MSS": { fixed: 704.800, perKg: 46.665 },
+                        "AMP": { fixed: 704.800, perKg: 54.625 }
                     },
                     "EXW": {
-                        "MSS": { fixed: 705, perKg: 35 },
-                        "AMP": { fixed: 705, perKg: 43 }
+                        "MSS": { fixed: 704.800, perKg: 46.665 },
+                        "AMP": { fixed: 704.800, perKg: 54.625 }
                     },
                     "FOB": {
-                        "MSS": { fixed: 555, perKg: 34 },
-                        "AMP": { fixed: 555, perKg: 42 }
+                        "MSS": { fixed: 554.800, perKg: 45.665 },
+                        "AMP": { fixed: 554.800, perKg: 53.625 }
                     }
                 }
             };
@@ -2623,7 +3128,19 @@
                         document.querySelector('.air-floating-nav').style.display = 'none';
                     }
                 });
-            });
+            })
+			
+			// 修复悬浮按钮点击事件
+				document.querySelectorAll('.floating-btn').forEach(btn => {
+					btn.addEventListener('click', function() {
+						const targetId = this.getAttribute('onclick').match(/scrollToSection\('(.+?)'\)/)[1];
+						const target = document.getElementById(targetId);
+						if (target) {
+							target.scrollIntoView({ behavior: 'smooth' });
+						}
+					});
+				});
+			;
             
             // 海运逻辑
             const categorySelect = document.getElementById('category');
@@ -2796,11 +3313,17 @@
                 // 获取FCL费率
                 const ampFclFixedBooking = currentAglRates.ampFclFixedBooking;
                 const ampFclBooking40HC = ampFclBooking40HCRates[fclPol] || 8500;
+				// 获取totalKG：
+				const totalKg = lclKgPerCBM * shipmentVolume;
                 
                 // 计算成本
                 // 1. AGL AMP FCL
                 const ampFclCost = ampFclFixedBooking + ampFclBooking40HC;
                 originalValues['ampFclCost'] = ampFclCost;
+				const ampFclCostPerKg = ampFclCost / totalKg;
+				const ampFclCostPerCbm = ampFclCost / shipmentVolume;
+				document.getElementById('ampFclCostPerKg').textContent = ampFclCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('ampFclCostPerCbm').textContent = ampFclCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 2. AGL MSS FCL - West
                 const aglMssFixedWest = currentAglRates.mssFclFixedWest;
@@ -2808,6 +3331,10 @@
                 const aglMssIBWest = ibFeeWest * fclUnits;
                 const aglMssFclWestCost = aglMssFixedWest + aglMss40HCWest + aglMssIBWest;
                 originalValues['aglMssFclWestCost'] = aglMssFclWestCost;
+				const mssFclWestCostPerKg = aglMssFclWestCost / totalKg;
+				const mssFclWestCostPerCbm = aglMssFclWestCost / shipmentVolume;
+				document.getElementById('mssFclWestCostPerKg').textContent = mssFclWestCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('mssFclWestCostPerCbm').textContent = mssFclWestCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 3. AGL MSS FCL - East
                 const aglMssFixedEast = currentAglRates.mssFclFixedEast;
@@ -2815,6 +3342,10 @@
                 const aglMssIBEast = ibFeeEast * fclUnits;
                 const aglMssFclEastCost = aglMssFixedEast + aglMss40HCEast + aglMssIBEast;
                 originalValues['aglMssFclEastCost'] = aglMssFclEastCost;
+				const mssFclEastCostPerKg = aglMssFclEastCost / totalKg;
+				const mssFclEastCostPerCbm = aglMssFclEastCost / shipmentVolume;
+				document.getElementById('mssFclEastCostPerKg').textContent = mssFclEastCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('mssFclEastCostPerCbm').textContent = mssFclEastCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 4. 3PL AOSS FCL
                 const aossWestCost = currentOceanRates.tplWestFclRate * (westPercent / 100);
@@ -2822,16 +3353,28 @@
                 const aossCentralCost = currentOceanRates.tplCentralFclRate * (centralPercent / 100);
                 const tplAossFclCost = aossWestCost + aossEastCost + aossCentralCost;
                 originalValues['tplAossFclCost'] = tplAossFclCost;
+				const aossFclCostPerKg = tplAossFclCost / totalKg;
+				const aossFclCostPerCbm = tplAossFclCost / shipmentVolume;
+				document.getElementById('aossFclCostPerKg').textContent = aossFclCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('aossFclCostPerCbm').textContent = aossFclCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 5. 3PL MSS FCL - West
                 const tplWestIB = ibFeeWest * fclUnits;
                 const tplWestCost = currentOceanRates.tplWestFclRate + tplWestIB;
                 originalValues['tplWestCost'] = tplWestCost;
+				const tplWestCostPerKg = tplWestCost / totalKg;
+				const tplWestCostPerCbm = tplWestCost / shipmentVolume;
+				document.getElementById('tplWestCostPerKg').textContent = tplWestCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('tplWestCostPerCbm').textContent = tplWestCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 6. 3PL MSS FCL - East
                 const tplEastIB = ibFeeEast * fclUnits;
                 const tplEastCost = currentOceanRates.tplEastFclRate + tplEastIB;
                 originalValues['tplEastCost'] = tplEastCost;
+				const tplEastCostPerKg = tplEastCost / totalKg;
+				const tplEastCostPerCbm = tplEastCost / shipmentVolume;
+				document.getElementById('tplEastCostPerKg').textContent = tplEastCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('tplEastCostPerCbm').textContent = tplEastCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 更新FCL结果
                 document.getElementById('ampFclCost').textContent = formatCurrency(ampFclCost);
@@ -2865,6 +3408,8 @@
                 
                 // LCL计算
                 const totalUnitsLCL = shipmentVolume * lclUnitsPerCBM;
+				const minKg = 50;
+				const minCbm = 0.5;
                 
                 // 获取LCL费率
                 const getLclRate = (rates, volume) => {
@@ -2881,6 +3426,10 @@
                 const ampLclDuty = totalUnitsLCL * declareValueAGL * tariffRate;
                 const ampLclCost = ampLclFixedFee + (ampLclRatePerCBM * shipmentVolume) + ampLclDuty;
                 originalValues['ampLclCost'] = ampLclCost;
+				const ampLclCostPerKg = ampLclCost / totalKg;
+				const ampLclCostPerCbm = ampLclCost / shipmentVolume;
+				document.getElementById('ampLclCostPerKg').textContent = ampLclCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('ampLclCostPerCbm').textContent = ampLclCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 8. AGL MSS LCL - West
                 const mssLclWestData = mssLclWestRates[lclPol] || mssLclWestRates["SHENZHEN"];
@@ -2890,6 +3439,10 @@
                 const mssLclWestDuty = totalUnitsLCL * declareValueAGL * tariffRate;
                 const aglMssLclWestCost = mssLclWestFixedFee + (mssLclWestRatePerCBM * shipmentVolume) + mssLclWestIB + mssLclWestDuty;
                 originalValues['aglMssLclWestCost'] = aglMssLclWestCost;
+				const aglMssLclWestCostPerKg = aglMssLclWestCost / totalKg;
+				const aglMssLclWestCostPerCbm = aglMssLclWestCost / shipmentVolume;
+				document.getElementById('aglMssLclWestCostPerKg').textContent = aglMssLclWestCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('aglMssLclWestCostPerCbm').textContent = aglMssLclWestCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 9. AGL MSS LCL - East
                 const mssLclEastData = mssLclEastRates[lclPol] || mssLclEastRates["SHENZHEN"];
@@ -2899,61 +3452,99 @@
                 const mssLclEastDuty = totalUnitsLCL * declareValueAGL * tariffRate;
                 const aglMssLclEastCost = mssLclEastFixedFee + (mssLclEastRatePerCBM * shipmentVolume) + mssLclEastIB + mssLclEastDuty;
                 originalValues['aglMssLclEastCost'] = aglMssLclEastCost;
+				const aglMssLclEastCostPerKg = aglMssLclEastCost / totalKg;
+				const aglMssLclEastCostPerCbm = aglMssLclEastCost / shipmentVolume;
+				document.getElementById('aglMssLclEastCostPerKg').textContent = aglMssLclEastCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('aglMssLclEastCostPerCbm').textContent = aglMssLclEastCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 10. AGL SMP LCL
                 const smpFixedFee = (mssLclWestFixedFee + mssLclEastFixedFee) * 2.5; // 动态计算
                 const smpDuty = totalUnitsLCL * declareValueAGL * tariffRate;
+				
+				const smpWestVolume = Math.max(shipmentVolume * currentAglRates.smpRegionalPercents.west, 1);
+				const smpMidEastVolume = Math.max(shipmentVolume * currentAglRates.smpRegionalPercents.midEast, 1);
+				const smpSouthEastVolume = Math.max(shipmentVolume * currentAglRates.smpRegionalPercents.southEast, 1);
+				const smpNorthEastVolume = Math.max(shipmentVolume * currentAglRates.smpRegionalPercents.northEast, 1);
+				const smpCentralVolume = Math.max(shipmentVolume * currentAglRates.smpRegionalPercents.central, 1);
                 
                 // 计算各区域费用
-                const smpWestCost = shipmentVolume * currentAglRates.smpRegionalPercents.west * getLclRate(mssLclWestData, shipmentVolume);
-                const smpMidEastCost = shipmentVolume * currentAglRates.smpRegionalPercents.midEast * getLclRate(mssLclEastData, shipmentVolume);
-                const smpSouthEastCost = shipmentVolume * currentAglRates.smpRegionalPercents.southEast * getLclRate(mssLclEastData, shipmentVolume);
-                const smpNorthEastCost = shipmentVolume * currentAglRates.smpRegionalPercents.northEast * getLclRate(mssLclEastData, shipmentVolume);
-                const smpCentralCost = shipmentVolume * currentAglRates.smpRegionalPercents.central * getLclRate(mssLclWestData, shipmentVolume);
+                const smpWestCost = smpWestVolume * getLclRate(mssLclWestData, smpWestVolume);
+                const smpMidEastCost = smpMidEastVolume * getLclRate(mssLclEastData, smpMidEastVolume);
+                const smpSouthEastCost = smpSouthEastVolume * getLclRate(mssLclEastData, smpSouthEastVolume);
+                const smpNorthEastCost = smpNorthEastVolume * getLclRate(mssLclEastData, smpNorthEastVolume);
+                const smpCentralCost = smpCentralVolume * getLclRate(mssLclWestData, smpCentralVolume);
                 
                 const smpLclCost = smpFixedFee + smpWestCost + smpMidEastCost + smpSouthEastCost + smpNorthEastCost + smpCentralCost + smpDuty;
                 originalValues['smpLclCost'] = smpLclCost;
+				const smpLclCostPerKg = smpLclCost / totalKg;
+				const smpLclCostPerCbm = smpLclCost / shipmentVolume;
+				document.getElementById('smpLclCostPerKg').textContent = smpLclCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('smpLclCostPerCbm').textContent = smpLclCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 11. 3PL AOSS LCL (duty incl.)
-                const aossLclWestCost = (currentOceanRates.tplWestRmbPerKg * shipmentVolume * (westPercent/100) * lclKgPerCBM) / currentOceanRates.exchangeRate;
-                const aossLclEastCost = (currentOceanRates.tplEastRmbPerKg * shipmentVolume * (eastPercent/100) * lclKgPerCBM) / currentOceanRates.exchangeRate;
-                const aossLclCentralCost = (currentOceanRates.tplCentralRmbPerKg * shipmentVolume * (centralPercent/100) * lclKgPerCBM) / currentOceanRates.exchangeRate;
+                const aossLclWestCost = (currentOceanRates.tplWestRmbPerKg * Math.max(shipmentVolume * (westPercent/100) * lclKgPerCBM, minKg)) / currentOceanRates.exchangeRate;
+                const aossLclEastCost = (currentOceanRates.tplEastRmbPerKg * Math.max(shipmentVolume * (eastPercent/100) * lclKgPerCBM, minKg)) / currentOceanRates.exchangeRate;
+                const aossLclCentralCost = (currentOceanRates.tplCentralRmbPerKg * Math.max(shipmentVolume * (centralPercent/100) * lclKgPerCBM, minKg)) / currentOceanRates.exchangeRate;
                 const tplAossLclDutyIncluded = aossLclWestCost + aossLclEastCost + aossLclCentralCost;
                 originalValues['tplAossLclDutyIncluded'] = tplAossLclDutyIncluded;
+				const tplaossLclDutyIncludedCostPerKg = tplAossLclDutyIncluded / totalKg;
+				const tplaossLclDutyIncludedCostPerCbm = tplAossLclDutyIncluded / shipmentVolume;
+				document.getElementById('tplaossLclDutyIncludedCostPerKg').textContent = tplaossLclDutyIncludedCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('tplaossLclDutyIncludedCostPerCbm').textContent = tplaossLclDutyIncludedCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 12. 3PL MSS LCL - West (duty incl.)
-                const tplMssLclWestBaseDutyIncl = (currentOceanRates.tplWestRmbPerKg * shipmentVolume * lclKgPerCBM) / currentOceanRates.exchangeRate;
+                const tplMssLclWestBaseDutyIncl = (currentOceanRates.tplWestRmbPerKg * Math.max(shipmentVolume * lclKgPerCBM, minKg)) / currentOceanRates.exchangeRate;
                 const tplMssLclWestIBDutyIncl = ibFeeWest * totalUnitsLCL;
                 const tplMssLclWestDutyIncl = tplMssLclWestBaseDutyIncl + tplMssLclWestIBDutyIncl;
                 originalValues['tplMssLclWestDutyIncl'] = tplMssLclWestDutyIncl;
+				const tplMssLclWestDutyInclCostPerKg = tplMssLclWestDutyIncl / totalKg;
+				const tplMssLclWestDutyInclCostPerCbm = tplMssLclWestDutyIncl / shipmentVolume;
+				document.getElementById('tplMssLclWestDutyInclCostPerKg').textContent = tplMssLclWestDutyInclCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('tplMssLclWestDutyInclCostPerCbm').textContent = tplMssLclWestDutyInclCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 13. 3PL MSS LCL - East (duty incl.)
-                const tplMssLclEastBaseDutyIncl = (currentOceanRates.tplEastRmbPerKg * shipmentVolume * lclKgPerCBM) / currentOceanRates.exchangeRate;
+                const tplMssLclEastBaseDutyIncl = (currentOceanRates.tplEastRmbPerKg * Math.max(shipmentVolume * lclKgPerCBM, minKg)) / currentOceanRates.exchangeRate;
                 const tplMssLclEastIBDutyIncl = ibFeeEast * totalUnitsLCL;
                 const tplMssLclEastDutyIncl = tplMssLclEastBaseDutyIncl + tplMssLclEastIBDutyIncl;
                 originalValues['tplMssLclEastDutyIncl'] = tplMssLclEastDutyIncl;
+				const tplMssLclEastDutyInclCostPerKg = tplMssLclEastDutyIncl / totalKg;
+				const tplMssLclEastDutyInclCostPerCbm = tplMssLclEastDutyIncl / shipmentVolume;
+				document.getElementById('tplMssLclEastDutyInclCostPerKg').textContent = tplMssLclEastDutyInclCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('tplMssLclEastDutyInclCostPerCbm').textContent = tplMssLclEastDutyInclCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 14. 3PL AOSS LCL (duty excl.) + Duty
-                const aossLclWestCost2 = (currentOceanRates.tplWestRmbPerCbm * shipmentVolume * (westPercent/100)) / currentOceanRates.exchangeRate;
-                const aossLclEastCost2 = (currentOceanRates.tplEastRmbPerCbm * shipmentVolume * (eastPercent/100)) / currentOceanRates.exchangeRate;
-                const aossLclCentralCost2 = (currentOceanRates.tplCentralRmbPerCbm * shipmentVolume * (centralPercent/100)) / currentOceanRates.exchangeRate;
+                const aossLclWestCost2 = (currentOceanRates.tplWestRmbPerCbm * Math.max(shipmentVolume * (westPercent/100), minCbm)) / currentOceanRates.exchangeRate;
+                const aossLclEastCost2 = (currentOceanRates.tplEastRmbPerCbm * Math.max(shipmentVolume * (eastPercent/100), minCbm)) / currentOceanRates.exchangeRate;
+                const aossLclCentralCost2 = (currentOceanRates.tplCentralRmbPerCbm * Math.max(shipmentVolume * (centralPercent/100), minCbm)) / currentOceanRates.exchangeRate;
                 const aossLclDuty = totalUnitsLCL * declareValue3PL * tariffRate;
                 const tplAossLclWithoutDuty = aossLclWestCost2 + aossLclEastCost2 + aossLclCentralCost2 + aossLclDuty;
                 originalValues['tplAossLclWithoutDuty'] = tplAossLclWithoutDuty;
+				const tplAossLclWithoutDutyCostPerKg = tplAossLclWithoutDuty / totalKg;
+				const tplAossLclWithoutDutyCostPerCbm = tplAossLclWithoutDuty / shipmentVolume;
+				document.getElementById('tplAossLclWithoutDutyCostPerKg').textContent = tplAossLclWithoutDutyCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('tplAossLclWithoutDutyCostPerCbm').textContent = tplAossLclWithoutDutyCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 15. 3PL MSS LCL - West (duty excl.) + duty
-                const tplMssLclWestBase = (currentOceanRates.tplWestRmbPerCbm * shipmentVolume) / currentOceanRates.exchangeRate;
+                const tplMssLclWestBase = (currentOceanRates.tplWestRmbPerCbm * Math.max(shipmentVolume, minCbm)) / currentOceanRates.exchangeRate;
                 const tplMssLclWestIB = ibFeeWest * totalUnitsLCL;
                 const tplMssLclWestDuty = totalUnitsLCL * declareValue3PL * tariffRate;
                 const tplMssLclWestCost = tplMssLclWestBase + tplMssLclWestIB + tplMssLclWestDuty;
                 originalValues['tplMssLclWestCost'] = tplMssLclWestCost;
+				const tplMssLclWestCostPerKg = tplMssLclWestCost / totalKg;
+				const tplMssLclWestCostPerCbm = tplMssLclWestCost / shipmentVolume;
+				document.getElementById('tplMssLclWestCostPerKg').textContent = tplMssLclWestCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('tplMssLclWestCostPerCbm').textContent = tplMssLclWestCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 16. 3PL MSS LCL - East (duty excl.) + duty
-                const tplMssLclEastBase = (currentOceanRates.tplEastRmbPerCbm * shipmentVolume) / currentOceanRates.exchangeRate;
+                const tplMssLclEastBase = (currentOceanRates.tplEastRmbPerCbm * Math.max(shipmentVolume, minCbm)) / currentOceanRates.exchangeRate;
                 const tplMssLclEastIB = ibFeeEast * totalUnitsLCL;
                 const tplMssLclEastDuty = totalUnitsLCL * declareValue3PL * tariffRate;
                 const tplMssLclEastCost = tplMssLclEastBase + tplMssLclEastIB + tplMssLclEastDuty;
                 originalValues['tplMssLclEastCost'] = tplMssLclEastCost;
+				const tplMssLclEastCostPerKg = tplMssLclEastCost / totalKg;
+				const tplMssLclEastCostPerCbm = tplMssLclEastCost / shipmentVolume;
+				document.getElementById('tplMssLclEastCostPerKg').textContent = tplMssLclEastCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+				document.getElementById('tplMssLclEastCostPerCbm').textContent = tplMssLclEastCostPerCbm.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 更新LCL结果
                 document.getElementById('ampLclCost').textContent = formatCurrency(ampLclCost);
@@ -3028,6 +3619,7 @@
             const airCategorySelect = document.getElementById('air-category');
             const airCustomTariffInput = document.getElementById('air-customTariffRate');
             const airTariffError = document.getElementById('air-tariffError');
+			const airminKg = 50;
             
             // 更新空运关税显示
             function updateAirTariffDisplay() {
@@ -3056,7 +3648,7 @@
                 const volumeWeight = volumeCBM / 0.006; // 调整计算逻辑
                 document.getElementById('volumeWeight').value = volumeWeight.toFixed(2);
                 
-                const chargeableWeight = Math.max(volumeWeight, weightKg);
+                const chargeableWeight = Math.max(Math.max(volumeWeight, weightKg), airminKg);
                 document.getElementById('chargeableWeight').value = chargeableWeight.toFixed(2);
                 
                 document.getElementById('chargeableWeightWC').value = (chargeableWeight * westPercent / 100).toFixed(2);
@@ -3184,6 +3776,8 @@
                 const ampPerKgTotal = chargeableWeight * ampPerKg;
                 const ampDuty = units * declareValueAGL * tariffRate;
                 const ampAirCost = ampFixedFee + ampPerKgTotal + ampDuty;
+				const ampAirCostPerKg = ampAirCost / chargeableWeight;
+				document.getElementById('ampAirCostPerKg').textContent = ampAirCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 2. AGL MSS
                 const mssRates = airAglRates[pol][incoterm]["MSS"];
@@ -3193,6 +3787,8 @@
                 const mssIBFee = ibFeeWest * units * exchangeRate;
                 const mssDuty = units * declareValueAGL * tariffRate;
                 const mssAirCost = mssFixedFee + mssPerKgTotal + mssIBFee + mssDuty;
+				const mssAirCostPerKg = mssAirCost / chargeableWeight;
+				document.getElementById('mssAirCostPerKg').textContent = mssAirCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 3. 3PL AOSS cost (duty incl.)
                 const wcRate = getAirRate(pol, 'Wc', chargeableWeightWC);
@@ -3203,12 +3799,16 @@
                 const ecCost = chargeableWeightEC * ecRate;
                 const ccCost = chargeableWeightCC * ccRate;
                 const tplAossAirCost = wcCost + ecCost + ccCost + tplSpecialCargo;
+				const tplAossAirCostPerKg = tplAossAirCost / chargeableWeight;
+				document.getElementById('tplAossAirCostPerKg').textContent = tplAossAirCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 4. 3PL MSS (duty incl.)
                 const tplPerKgRate = getAirRate(pol, 'Wc', chargeableWeight); // 使用总重量
                 const tplPerKgTotal = chargeableWeight * tplPerKgRate;
                 const tplIBFee = ibFeeWest * units * exchangeRate;
                 const tplMssAirCost = tplPerKgTotal + tplIBFee + tplSpecialCargo;
+				const tplMssAirCostPerKg = tplMssAirCost / chargeableWeight;
+				document.getElementById('tplMssAirCostPerKg').textContent = tplMssAirCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 5. 3PL Express AOSS cost (duty excl. + duty)
                 const expressWcRate = getExpressRate(pol, chargeableWeightWC);
@@ -3220,6 +3820,8 @@
                 const expressAossCentralCost = chargeableWeightCC * expressCcRate;
                 const expressAossDutyCost = units * declareValue3PL * tariffRate;
                 const expressAossAirCost = expressAossWestCost + expressAossEastCost + expressAossCentralCost + expressAossDutyCost + tplExpressSpecialCargo;
+				const tplexpressAossAirCostPerKg = expressAossAirCost / chargeableWeight;
+				document.getElementById('tplexpressAossAirCostPerKg').textContent = tplexpressAossAirCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 6. 3PL Express MSS cost (duty excl. + duty)
                 const expressPerKgRate = getExpressRate(pol, chargeableWeight);
@@ -3227,6 +3829,8 @@
                 const expressIBFee = ibFeeWest * units * exchangeRate;
                 const expressDutyCost = units * declareValue3PL * tariffRate;
                 const expressMssAirCost = expressPerKgTotal + expressIBFee + expressDutyCost + tplExpressSpecialCargo;
+				const tplexpressMssAirCostPerKg = expressMssAirCost / chargeableWeight;
+				document.getElementById('tplexpressMssAirCostPerKg').textContent = tplexpressMssAirCostPerKg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                 
                 // 更新结果
                 document.getElementById('ampAirCost').textContent = `¥${ampAirCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -3290,7 +3894,7 @@
                 // 使用新费率重新计算
                 calculateCosts();
                 
-                alert('3PL Custom rates applied successfully!');
+                customAlert('3PL Custom rates applied successfully!');
             });
             
             // 重置海运费率
@@ -3311,38 +3915,38 @@
                 // 使用预设费率重新计算
                 calculateCosts();
                 
-                alert('3PL Rates reset to preset values!');
+                customAlert('3PL Rates reset to preset values!');
             });
             
             // 应用自定义空运费率
             document.getElementById('applyAirCustomRatesBtn').addEventListener('click', function() {
                 // 更新3PL费率
-                currentAirRates.tplPerKgHkgWc70 = parseFloat(document.getElementById('customTplPerKgHkgWc70').value) || 49.03;
-                currentAirRates.tplPerKgHkgWc99 = parseFloat(document.getElementById('customTplPerKgHkgWc99').value) || 49.03;
-                currentAirRates.tplPerKgHkgWc100 = parseFloat(document.getElementById('customTplPerKgHkgWc100').value) || 48.02;
-                currentAirRates.tplPerKgHkgEc70 = parseFloat(document.getElementById('customTplPerKgHkgEc70').value) || 52.27;
-                currentAirRates.tplPerKgHkgEc99 = parseFloat(document.getElementById('customTplPerKgHkgEc99').value) || 52.27;
-                currentAirRates.tplPerKgHkgEc100 = parseFloat(document.getElementById('customTplPerKgHkgEc100').value) || 50.98;
-                currentAirRates.tplPerKgHkgCc70 = parseFloat(document.getElementById('customTplPerKgHkgCc70').value) || 51.26;
-                currentAirRates.tplPerKgHkgCc99 = parseFloat(document.getElementById('customTplPerKgHkgCc99').value) || 51.26;
-                currentAirRates.tplPerKgHkgCc100 = parseFloat(document.getElementById('customTplPerKgHkgCc100').value) || 50.04;
-                currentAirRates.tplPerKgPvgWc70 = parseFloat(document.getElementById('customTplPerKgPvgWc70').value) || 48.80;
-                currentAirRates.tplPerKgPvgWc99 = parseFloat(document.getElementById('customTplPerKgPvgWc99').value) || 42.30;
-                currentAirRates.tplPerKgPvgWc100 = parseFloat(document.getElementById('customTplPerKgPvgWc100').value) || 39.20;
-                currentAirRates.tplPerKgPvgEc70 = parseFloat(document.getElementById('customTplPerKgPvgEc70').value) || 52.80;
-                currentAirRates.tplPerKgPvgEc99 = parseFloat(document.getElementById('customTplPerKgPvgEc99').value) || 47.80;
-                currentAirRates.tplPerKgPvgEc100 = parseFloat(document.getElementById('customTplPerKgPvgEc100').value) || 44.68;
-                currentAirRates.tplPerKgPvgCc70 = parseFloat(document.getElementById('customTplPerKgPvgCc70').value) || 53.80;
-                currentAirRates.tplPerKgPvgCc99 = parseFloat(document.getElementById('customTplPerKgPvgCc99').value) || 48.80;
-                currentAirRates.tplPerKgPvgCc100 = parseFloat(document.getElementById('customTplPerKgPvgCc100').value) || 45.68;
+                currentAirRates.tplPerKgHkgWc70 = parseFloat(document.getElementById('customTplPerKgHkgWc70').value) || 51.48;
+                currentAirRates.tplPerKgHkgWc99 = parseFloat(document.getElementById('customTplPerKgHkgWc99').value) || 51.48;
+                currentAirRates.tplPerKgHkgWc100 = parseFloat(document.getElementById('customTplPerKgHkgWc100').value) || 50.47;
+                currentAirRates.tplPerKgHkgEc70 = parseFloat(document.getElementById('customTplPerKgHkgEc70').value) || 54.72;
+                currentAirRates.tplPerKgHkgEc99 = parseFloat(document.getElementById('customTplPerKgHkgEc99').value) || 54.72;
+                currentAirRates.tplPerKgHkgEc100 = parseFloat(document.getElementById('customTplPerKgHkgEc100').value) || 53.50;
+                currentAirRates.tplPerKgHkgCc70 = parseFloat(document.getElementById('customTplPerKgHkgCc70').value) || 53.78;
+                currentAirRates.tplPerKgHkgCc99 = parseFloat(document.getElementById('customTplPerKgHkgCc99').value) || 53.78;
+                currentAirRates.tplPerKgHkgCc100 = parseFloat(document.getElementById('customTplPerKgHkgCc100').value) || 52.49;
+                currentAirRates.tplPerKgPvgWc70 = parseFloat(document.getElementById('customTplPerKgPvgWc70').value) || 45.80;
+                currentAirRates.tplPerKgPvgWc99 = parseFloat(document.getElementById('customTplPerKgPvgWc99').value) || 45.80;
+                currentAirRates.tplPerKgPvgWc100 = parseFloat(document.getElementById('customTplPerKgPvgWc100').value) || 41.69;
+                currentAirRates.tplPerKgPvgEc70 = parseFloat(document.getElementById('customTplPerKgPvgEc70').value) || 47.81;
+                currentAirRates.tplPerKgPvgEc99 = parseFloat(document.getElementById('customTplPerKgPvgEc99').value) || 47.81;
+                currentAirRates.tplPerKgPvgEc100 = parseFloat(document.getElementById('customTplPerKgPvgEc100').value) || 44.71;
+                currentAirRates.tplPerKgPvgCc70 = parseFloat(document.getElementById('customTplPerKgPvgCc70').value) || 46.8;
+                currentAirRates.tplPerKgPvgCc99 = parseFloat(document.getElementById('customTplPerKgPvgCc99').value) || 46.8;
+                currentAirRates.tplPerKgPvgCc100 = parseFloat(document.getElementById('customTplPerKgPvgCc100').value) || 43.70;
                 
                 // 更新快递费率
-                currentAirRates.tplExpressPerKgHkg70 = parseFloat(document.getElementById('customTplExpressPerKgHkg70').value) || 47.52;
-                currentAirRates.tplExpressPerKgHkg99 = parseFloat(document.getElementById('customTplExpressPerKgHkg99').value) || 47.52;
-                currentAirRates.tplExpressPerKgHkg100 = parseFloat(document.getElementById('customTplExpressPerKgHkg100').value) || 47.52;
-                currentAirRates.tplExpressPerKgPvg70 = parseFloat(document.getElementById('customTplExpressPerKgPvg70').value) || 46.52;
-                currentAirRates.tplExpressPerKgPvg99 = parseFloat(document.getElementById('customTplExpressPerKgPvg99').value) || 46.52;
-                currentAirRates.tplExpressPerKgPvg100 = parseFloat(document.getElementById('customTplExpressPerKgPvg100').value) || 46.52;
+                currentAirRates.tplExpressPerKgHkg70 = parseFloat(document.getElementById('customTplExpressPerKgHkg70').value) || 52.56;
+                currentAirRates.tplExpressPerKgHkg99 = parseFloat(document.getElementById('customTplExpressPerKgHkg99').value) || 52.56;
+                currentAirRates.tplExpressPerKgHkg100 = parseFloat(document.getElementById('customTplExpressPerKgHkg100').value) || 51.84;
+                currentAirRates.tplExpressPerKgPvg70 = parseFloat(document.getElementById('customTplExpressPerKgPvg70').value) || 51.56;
+                currentAirRates.tplExpressPerKgPvg99 = parseFloat(document.getElementById('customTplExpressPerKgPvg99').value) || 51.56;
+                currentAirRates.tplExpressPerKgPvg100 = parseFloat(document.getElementById('customTplExpressPerKgPvg100').value) || 50.84;
                 
                 // 更新特殊货物附加费
                 currentAirRates.tplSpecialCargo = parseFloat(document.getElementById('customTplSpecialCargo').value) || 0;
@@ -3354,7 +3958,7 @@
                 // 使用新费率重新计算
                 calculateAirCosts();
                 
-                alert('Custom rates applied successfully!');
+                customAlert('Custom rates applied successfully!');
             });
             
             // 重置空运费率
@@ -3362,30 +3966,30 @@
                 currentAirRates = {...airPresetRates};
                 
                 // 重置所有输入字段
-                document.getElementById('customTplPerKgHkgWc70').value = 49.03;
-                document.getElementById('customTplPerKgHkgWc99').value = 49.03;
-                document.getElementById('customTplPerKgHkgWc100').value = 48.02;
-                document.getElementById('customTplPerKgHkgEc70').value = 52.27;
-                document.getElementById('customTplPerKgHkgEc99').value = 52.27;
-                document.getElementById('customTplPerKgHkgEc100').value = 50.98;
-                document.getElementById('customTplPerKgHkgCc70').value = 51.26;
-                document.getElementById('customTplPerKgHkgCc99').value = 51.26;
-                document.getElementById('customTplPerKgHkgCc100').value = 50.04;
-                document.getElementById('customTplPerKgPvgWc70').value = 48.80;
-                document.getElementById('customTplPerKgPvgWc99').value = 42.30;
-                document.getElementById('customTplPerKgPvgWc100').value = 39.20;
-                document.getElementById('customTplPerKgPvgEc70').value = 52.80;
-                document.getElementById('customTplPerKgPvgEc99').value = 47.80;
-                document.getElementById('customTplPerKgPvgEc100').value = 44.68;
-                document.getElementById('customTplPerKgPvgCc70').value = 53.80;
-                document.getElementById('customTplPerKgPvgCc99').value = 48.80;
-                document.getElementById('customTplPerKgPvgCc100').value = 45.68;
-                document.getElementById('customTplExpressPerKgHkg70').value = 45.62;
-                document.getElementById('customTplExpressPerKgHkg99').value = 44.81;
-                document.getElementById('customTplExpressPerKgHkg100').value = 44.81;
-                document.getElementById('customTplExpressPerKgPvg70').value = 47.62;
-                document.getElementById('customTplExpressPerKgPvg99').value = 46.81;
-                document.getElementById('customTplExpressPerKgPvg100').value = 46.81;
+                document.getElementById('customTplPerKgHkgWc70').value = 51.48;
+                document.getElementById('customTplPerKgHkgWc99').value = 51.48;
+                document.getElementById('customTplPerKgHkgWc100').value = 50.47;
+                document.getElementById('customTplPerKgHkgEc70').value = 54.72;
+                document.getElementById('customTplPerKgHkgEc99').value = 54.72;
+                document.getElementById('customTplPerKgHkgEc100').value = 53.50;
+                document.getElementById('customTplPerKgHkgCc70').value = 53.78;
+                document.getElementById('customTplPerKgHkgCc99').value = 53.78;
+                document.getElementById('customTplPerKgHkgCc100').value = 52.49;
+                document.getElementById('customTplPerKgPvgWc70').value = 45.80;
+                document.getElementById('customTplPerKgPvgWc99').value = 45.80;
+                document.getElementById('customTplPerKgPvgWc100').value = 41.69;
+                document.getElementById('customTplPerKgPvgEc70').value = 47.81;
+                document.getElementById('customTplPerKgPvgEc99').value = 47.81;
+                document.getElementById('customTplPerKgPvgEc100').value = 44.71;
+                document.getElementById('customTplPerKgPvgCc70').value = 46.8;
+                document.getElementById('customTplPerKgPvgCc99').value = 46.8;
+                document.getElementById('customTplPerKgPvgCc100').value = 43.70;
+                document.getElementById('customTplExpressPerKgHkg70').value = 52.56;
+                document.getElementById('customTplExpressPerKgHkg99').value = 52.56;
+                document.getElementById('customTplExpressPerKgHkg100').value = 51.84;
+                document.getElementById('customTplExpressPerKgPvg70').value = 51.56;
+                document.getElementById('customTplExpressPerKgPvg99').value = 51.56;
+                document.getElementById('customTplExpressPerKgPvg100').value = 50.84;
                 document.getElementById('customTplSpecialCargo').value = 0;
                 document.getElementById('customTplExpressSpecialCargo').value = 0;
                 document.getElementById('customAirExchangeRate').value = 7.2;
@@ -3393,10 +3997,18 @@
                 // 使用预设费率重新计算
                 calculateAirCosts();
                 
-                alert('Rates reset to preset values!');
+                customAlert('Rates reset to preset values!');
             });
         });
     </script>
+	<div id="customAlertModal" class="password-modal" style="display: none;">
+    <div class="password-container">
+        <h2><i class="fas fa-info-circle"></i> Notification</h2>
+        <p id="customAlertMessage"></p>
+        <button class="btn" id="customAlertOK">
+            <i class="fas fa-check"></i> OK
+        </button>
+    </div>
+</div>
 </body>
-
 </html>
