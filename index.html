@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGL Sales Toolkits - Logistics Cost Calculator</title>
+    <title>Sales Toolkits - Logistics Cost Calculator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -468,6 +468,96 @@
             border-radius: 10px;
             line-height: 1.6;
         }
+		
+		/* 优化instruction页签中的表格样式 - 新增代码开始 */
+		.instructions-content table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 15px 0;
+			font-size: 0.9rem;
+			table-layout: auto; /* 让表格自动调整列宽 */
+			word-break: break-word; /* 允许长单词换行 */
+		}
+
+		.instructions-content th, 
+		.instructions-content td {
+			padding: 8px 12px;
+			text-align: left;
+			border: 1px solid var(--border);
+			vertical-align: top; /* 内容顶部对齐 */
+		}
+
+		.instructions-content th {
+			background-color: var(--primary);
+			color: white;
+			font-weight: 600;
+		}
+
+		.instructions-content tr:nth-child(even) {
+			background-color: #f8f9fa;
+		}
+
+		/* 小屏幕适配 */
+		@media (max-width: 768px) {
+			.instructions-content table {
+				font-size: 0.85rem;
+			}
+			
+			.instructions-content th, 
+			.instructions-content td {
+				padding: 6px 8px;
+			}
+		}
+
+		/* 超小屏幕适配 - 将表格转换为垂直堆叠布局 */
+		@media (max-width: 480px) {
+			.instructions-content table {
+				display: block;
+				width: 100%;
+			}
+			
+			.instructions-content thead {
+				display: none; /* 隐藏表: none; /* 隐藏表头 */
+			}
+			
+			.instructions-content tbody,
+			.instructions-content tr,
+			.instructions-content td {
+				display: block;
+				width: 100%;
+			}
+			
+			.instructions-content tr {
+				margin-bottom: 15px;
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				overflow: hidden;
+			}
+			
+			.instructions-content td {
+				border: none;
+				border-bottom: 1px solid var(--border);
+				position: relative;
+				padding-left: 40%;
+				text-align: right;
+			}
+			
+			.instructions-content td:before {
+				content: attr(data-label);
+				position: absolute;
+				left: 10px;
+				width: 35%;
+				text-align: left;
+				font-weight: bold;
+				color: var(--primary);
+			}
+			
+			.instructions-content td:last-child {
+				border-bottom: none;
+			}
+		}
+		/* 优化instruction页签中的表格样式 - 新增代码结束 */
+		
         
         .instructions-content h3 {
             color: var(--primary);
@@ -1137,6 +1227,38 @@
                 margin-top: 10px;
             }
         }
+		
+		/* 版本号显示样式 - 添加到CSS最后 */
+			.sidebar::after {
+				content: "20250818v01"; /* 这里设置您的版本号 */
+				display: block;
+				position: fixed;
+				bottom: 10px;
+				left: 10px;
+				font-size: 0.8rem;
+				color: var(--gray);
+				background: rgba(255,255,255,0.9);
+				padding: 2px 5px;
+				border-radius: 3px;
+				z-index: 101;
+				opacity: 0.7;
+				transition: var(--transition);
+			}
+
+			.sidebar:hover::after {
+				opacity: 1;
+			}
+
+			/* 小屏幕适配 */
+			@media (max-width: 992px) {
+				.sidebar::after {
+					left: 5px;
+					bottom: 5px;
+					font-size: 0.6rem;
+					padding: 1px 3px;
+				}
+			}
+		
     </style>
 </head>
 <body>
@@ -1164,7 +1286,7 @@
     
     <div class="sidebar">
         <div class="logo-container">
-            <div class="logo-en">AGL Sales Toolkits</div>
+            <div class="logo-en">Sales Toolkits</div>
         </div>
         
         <ul class="nav-menu">
@@ -1205,13 +1327,37 @@
                     <span>System Demo</span>
                 </a>
             </li>
+			
+			<li class="nav-divider"></li>
+				<li class="nav-item">
+					<a href="https://quip-amazon.com/6pfAA81Mtbkl#ZIC9AAT8P8V" 
+					   target="_blank" 
+					   class="nav-link" 
+					   data-external>
+						<i class="fas fa-book-open"></i>
+						<span>User Guide >></span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a 
+						href="mailto:yannya@amazon.com?
+						subject=Sales toolkit feedback&
+						cc=gm-bd-enablement@amazon.com&
+						body=Description" 
+						class="nav-link" 
+						data-external>
+						<i class="fas fa-envelope"></i>
+						<span>Email Us >></span>
+					</a>
+				</li>
+			
         </ul>
     </div>
     
     <div class="main-content">
         <div class="page-content" id="ocean-page">
             <div class="page-header">
-                <h1><i class="fas fa-ship"></i> Ocean Freight Cost AGL vs. 3PL </h1>
+                <h1><i class="fas fa-ship"></i> Ocean Freight Cost </h1>
 			</div>
             
             <div class="calculator-container">
@@ -1603,15 +1749,15 @@
                         <div class="param-grid">
                             <div class="param-item">
                                 <label>3PL FCL West Rate ($) (duty excl.)</label>
-                                <input type="number" id="customTplWestFclRate" value="3998">
+                                <input type="number" id="customTplWestFclRate" value="3607">
                             </div>
                             <div class="param-item">
                                 <label>3PL FCL East Rate ($) (duty excl.)</label>
-                                <input type="number" id="customTplEastFclRate" value="7391">
+                                <input type="number" id="customTplEastFclRate" value="4897">
                             </div>
                             <div class="param-item">
                                 <label>3PL FCL Central Rate ($) (duty excl.)</label>
-                                <input type="number" id="customTplCentralFclRate" value="6610">
+                                <input type="number" id="customTplCentralFclRate" value="4220">
                             </div>
                         </div>
                         
@@ -1620,27 +1766,27 @@
                         <div class="compact-lcl-params" id="tpl-lcl-params">
                             <div class="param-item">
                                 <label>3PL WC RMB/kg (duty incl.)</label>
-                                <input type="number" id="customTplWestRmbPerKg" value="5.1">
+                                <input type="number" id="customTplWestRmbPerKg" value="5.83">
                             </div>
                             <div class="param-item">
                                 <label>3PL EC RMB/kg (duty incl.)</label>
-                                <input type="number" id="customTplEastRmbPerKg" value="6.8">
+                                <input type="number" id="customTplEastRmbPerKg" value="6.14">
                             </div>
                             <div class="param-item">
                                 <label>3PL CC RMB/kg (duty incl.)</label>
-                                <input type="number" id="customTplCentralRmbPerKg" value="6.8">
+                                <input type="number" id="customTplCentralRmbPerKg" value="6.60">
                             </div>
                             <div class="param-item">
                                 <label>3PL WC RMB/CBM (duty excl.)</label>
-                                <input type="number" id="customTplWestRmbPerCbm" value="789.84">
+                                <input type="number" id="customTplWestRmbPerCbm" value="719.78">
                             </div>
                             <div class="param-item">
                                 <label>3PL EC RMB/CBM (duty excl.)</label>
-                                <input type="number" id="customTplEastRmbPerCbm" value="980.64">
+                                <input type="number" id="customTplEastRmbPerCbm" value="934.10">
                             </div>
                             <div class="param-item">
                                 <label>3PL CC RMB/CBM (duty excl.)</label>
-                                <input type="number" id="customTplCentralRmbPerCbm" value="1033.2">
+                                <input type="number" id="customTplCentralRmbPerCbm" value="1006.87">
                             </div>
                         </div>
                         
@@ -1668,7 +1814,7 @@
                         <h3><i class="fas fa-info-circle"></i> Ocean Freight Cost Calculator Instructions</h3>
                         
                         <div class="file-info">
-                            <h4>AGL Rate Card Version: 7/29/2025</h4>
+                            <h4>AGL Rate Card Version: valid from Aug 5, 2025</h4>
                         </div>
                         
                         <h3>AGL FCL Rates</h3>
@@ -1953,6 +2099,102 @@
 									<td>106</td>
 									<td>5474</td>
 								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>SHANGHAI</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5536.7777</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>XIAMEN</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5524</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>QINGDAO</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5525</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>TIANJIN</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5534</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>FUZHOU</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5517</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>HONGKONG</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5499</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>ZHUHAI</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5524</td>
+								</tr>
+								<tr>
+									<td>US</td>
+									<td>SO</td>
+									<td>USD</td>
+									<td>MSS</td>
+									<td>non-FOB</td>
+									<td>LIANYUNGANG</td>
+									<td>US East</td>
+									<td>Sort</td>
+									<td>106</td>
+									<td>5525</td>
+								</tr>
 								
                             </tbody>
                         </table>
@@ -1969,8 +2211,8 @@
                                     <th>POL</th>
                                     <th>Destination Region</th>
                                     <th>FC Type</th>
-                                    <th>Export Clearance</th>
-                                    <th>Import Clearance</th>
+                                    <th>Fixed Fee</th>
+                                    <th>Reserved</th>
                                     <th>1-5 CBMS</th>
                                     <th>5-10 CBMS</th>
                                     <th>10-15 CBMS</th>
@@ -1987,8 +2229,8 @@
                                     <td>NINGBO</td>
                                     <td>US West</td>
                                     <td>Sort</td>
-                                    <td>10.6666</td>
-                                    <td>76</td>
+                                    <td>86.6666</td>
+                                    <td>0</td>
                                     <td>160.9097</td>
                                     <td>160.9097</td>
                                     <td>160.9097</td>
@@ -2003,8 +2245,8 @@
                                     <td>SHANGHAI</td>
                                     <td>US West</td>
                                     <td>Sort</td>
-                                    <td>13.3333</td>
-                                    <td>76</td>
+                                    <td>89.3333</td>
+                                    <td>0</td>
                                     <td>160.4291</td>
                                     <td>160.4291</td>
                                     <td>160.4291</td>
@@ -2019,8 +2261,8 @@
                                     <td>XIAMEN</td>
                                     <td>US West</td>
                                     <td>Sort</td>
-                                    <td>17.7777</td>
-                                    <td>76</td>
+                                    <td>93.7777</td>
+                                    <td>0</td>
                                     <td>160.7902</td>
                                     <td>160.7902</td>
                                     <td>160.7902</td>
@@ -2035,8 +2277,8 @@
                                     <td>QINGDAO</td>
                                     <td>US West</td>
                                     <td>Sort</td>
-                                    <td>20.4444</td>
-                                    <td>76</td>
+                                    <td>96.4444</td>
+                                    <td>0</td>
                                     <td>159.4444</td>
                                     <td>159.4444</td>
                                     <td>159.4444</td>
@@ -2051,8 +2293,8 @@
                                     <td>SHENZHEN</td>
                                     <td>US West</td>
                                     <td>Sort</td>
-                                    <td>24.8888</td>
-                                    <td>76</td>
+                                    <td>100.8888</td>
+                                    <td>0</td>
                                     <td>162.4</td>
                                     <td>162.4</td>
                                     <td>162.4</td>
@@ -2068,8 +2310,8 @@
 									<td>NINGBO</td>
 									<td>US West</td>
 									<td>Sort</td>
-									<td>10.6666</td>
-									<td>76</td>
+									<td>86.6666</td>
+									<td>0</td>
 									<td>89.1597</td>
 									<td>89.1597</td>
 									<td>89.1597</td>
@@ -2084,8 +2326,8 @@
 									<td>SHANGHAI</td>
 									<td>US West</td>
 									<td>Sort</td>
-									<td>13.3333</td>
-									<td>76</td>
+									<td>89.3333</td>
+									<td>0</td>
 									<td>88.6791</td>
 									<td>88.6791</td>
 									<td>88.6791</td>
@@ -2100,8 +2342,8 @@
 									<td>XIAMEN</td>
 									<td>US West</td>
 									<td>Sort</td>
-									<td>17.7777</td>
-									<td>76</td>
+									<td>93.7777</td>
+									<td>0</td>
 									<td>89.0402</td>
 									<td>89.0402</td>
 									<td>89.0402</td>
@@ -2116,8 +2358,8 @@
 									<td>QINGDAO</td>
 									<td>US West</td>
 									<td>Sort</td>
-									<td>20.4444</td>
-									<td>76</td>
+									<td>96.4444</td>
+									<td>0</td>
 									<td>87.6944</td>
 									<td>87.6944</td>
 									<td>87.6944</td>
@@ -2132,8 +2374,8 @@
 									<td>SHENZHEN</td>
 									<td>US West</td>
 									<td>Sort</td>
-									<td>24.8888</td>
-									<td>76</td>
+									<td>100.8888</td>
+									<td>0</td>
 									<td>90.65</td>
 									<td>90.65</td>
 									<td>90.65</td>
@@ -2148,8 +2390,8 @@
 									<td>NINGBO</td>
 									<td>US East</td>
 									<td>Sort</td>
-									<td>10.6666</td>
-									<td>76</td>
+									<td>86.6666</td>
+									<td>0</td>
 									<td>118.0569</td>
 									<td>118.0569</td>
 									<td>118.0569</td>
@@ -2164,8 +2406,8 @@
 									<td>SHANGHAI</td>
 									<td>US East</td>
 									<td>Sort</td>
-									<td>13.3333</td>
-									<td>76</td>
+									<td>89.3333</td>
+									<td>0</td>
 									<td>117.5986</td>
 									<td>117.5986</td>
 									<td>117.5986</td>
@@ -2180,8 +2422,8 @@
 									<td>XIAMEN</td>
 									<td>US East</td>
 									<td>Sort</td>
-									<td>17.7777</td>
-									<td>76</td>
+									<td>93.7777</td>
+									<td>0</td>
 									<td>118.1152</td>
 									<td>118.1152</td>
 									<td>118.1152</td>
@@ -2196,8 +2438,8 @@
 									<td>QINGDAO</td>
 									<td>US East</td>
 									<td>Sort</td>
-									<td>20.4444</td>
-									<td>76</td>
+									<td>96.4444</td>
+									<td>0</td>
 									<td>114.8875</td>
 									<td>114.8875</td>
 									<td>114.8875</td>
@@ -2212,8 +2454,8 @@
 									<td>SHENZHEN</td>
 									<td>US East</td>
 									<td>Sort</td>
-									<td>24.8888</td>
-									<td>76</td>
+									<td>100.8888</td>
+									<td>0</td>
 									<td>122.2083</td>
 									<td>122.2083</td>
 									<td>122.2083</td>
@@ -2251,7 +2493,7 @@
         
         <div class="page-content" id="air-page" style="display:none;">
             <div class="page-header">
-                <h1><i class="fas fa-plane"></i> Air Freight Cost AGL vs. 3PL </h1>
+                <h1><i class="fas fa-plane"></i> Air Freight Cost </h1>
             </div>
             
             <div class="calculator-container">
@@ -2663,7 +2905,7 @@
                         <h3><i class="fas fa-info-circle"></i> Air Freight Cost Calculator Instructions</h3>
                         
                         <div class="file-info">
-                            <h4>AGL Rate Card Version: 8/9/2025 (first version full launch)</h4>
+                            <h4>AGL Rate Card Version: valid from Aug 7, 2025</h4>
                         </div>
                         
                         <h3>AGL Rate Card</h3>
@@ -2796,7 +3038,7 @@
             </div>
             <div class="placeholder">
                 <i class="fas fa-home"></i>
-                <h3>Welcome to AGL Sales Toolkits</h3>
+                <h3>Welcome to Sales Toolkits</h3>
                 <p>Select a tool from the sidebar to get started.</p>
 				<p style="margin-top: 20px;">Find the latest version and guidebook from this <a href="https://quip-amazon.com/6pfAA81Mtbkl#ZIC9AAT8P8V" target=“_blank” class="contact-link">Quip</a> and feedback your comments if any.</p>
             </div>
@@ -2865,15 +3107,15 @@ function customAlert(message) {
             
             // 初始化预设参数
             let oceanPresetRates = {
-                tplWestFclRate: 3998,
-                tplEastFclRate: 7391,
-                tplCentralFclRate: 6610,
-                tplWestRmbPerKg: 5.1,
-                tplEastRmbPerKg: 6.8,
-                tplCentralRmbPerKg: 6.8,
-                tplWestRmbPerCbm: 789.84,
-                tplEastRmbPerCbm: 980.64,
-                tplCentralRmbPerCbm: 1033.2,
+                tplWestFclRate: 3607,
+                tplEastFclRate: 4897,
+                tplCentralFclRate: 4220,
+                tplWestRmbPerKg: 5.83,
+                tplEastRmbPerKg: 6.14,
+                tplCentralRmbPerKg: 6.60,
+                tplWestRmbPerCbm: 719.78,
+                tplEastRmbPerCbm: 934.10,
+                tplCentralRmbPerCbm: 1006.87,
                 exchangeRate: 7.2
             };
             
@@ -2972,27 +3214,27 @@ function customAlert(message) {
             
             // LCL费用映射表
             const ampLclRates = {
-                "NINGBO": { exportClearance: 10.6666, importClearance: 76, rates: [160.9097, 160.9097, 160.9097, 160.9097] },
-                "SHANGHAI": { exportClearance: 13.3333, importClearance: 76, rates: [160.4291, 160.4291, 160.4291, 160.4291] },
-                "XIAMEN": { exportClearance: 17.7777, importClearance: 76, rates: [160.7902, 160.7902, 160.7902, 160.7902] },
-                "QINGDAO": { exportClearance: 20.4444, importClearance: 76, rates: [159.4444, 159.4444, 159.4444, 159.4444] },
-                "SHENZHEN": { exportClearance: 24.8888, importClearance: 76, rates: [162.4, 162.4, 162.4, 162.4] }
+                "NINGBO": { exportClearance: 86.6666, reserved: 0, rates: [160.9097, 160.9097, 160.9097, 160.9097] },
+                "SHANGHAI": { exportClearance: 89.3333, reserved: 0, rates: [160.4291, 160.4291, 160.4291, 160.4291] },
+                "XIAMEN": { exportClearance: 93.7777, reserved: 0, rates: [160.7902, 160.7902, 160.7902, 160.7902] },
+                "QINGDAO": { exportClearance: 96.4444, reserved: 0, rates: [159.4444, 159.4444, 159.4444, 159.4444] },
+                "SHENZHEN": { exportClearance: 100.8888, reserved: 0, rates: [162.4, 162.4, 162.4, 162.4] }
             };
             
             const mssLclWestRates = {
-                "NINGBO": { exportClearance: 10.6666, importClearance: 76, rates: [89.1597, 89.1597, 89.1597, 89.1597] },
-                "SHANGHAI": { exportClearance: 13.3333, importClearance: 76, rates: [88.6791, 88.6791, 88.6791, 88.6791] },
-                "XIAMEN": { exportClearance: 17.7777, importClearance: 76, rates: [89.0402, 89.0402, 89.0402, 89.0402] },
-                "QINGDAO": { exportClearance: 20.4444, importClearance: 76, rates: [87.6944, 87.6944, 87.6944, 87.6944] },
-                "SHENZHEN": { exportClearance: 24.8888, importClearance: 76, rates: [90.65, 90.65, 90.65, 90.65] }
+                "NINGBO": { exportClearance: 86.6666, reserved: 0, rates: [89.1597, 89.1597, 89.1597, 89.1597] },
+                "SHANGHAI": { exportClearance: 89.3333, reserved: 0, rates: [88.6791, 88.6791, 88.6791, 88.6791] },
+                "XIAMEN": { exportClearance: 93.7777, reserved: 0, rates: [89.0402, 89.0402, 89.0402, 89.0402] },
+                "QINGDAO": { exportClearance: 96.4444, reserved: 0, rates: [87.6944, 87.6944, 87.6944, 87.6944] },
+                "SHENZHEN": { exportClearance: 100.8888, reserved: 0, rates: [90.65, 90.65, 90.65, 90.65] }
             };
             
             const mssLclEastRates = {
-                "NINGBO": { exportClearance: 10.6666, importClearance: 76, rates: [118.0569, 118.0569, 118.0569, 118.0569] },
-                "SHANGHAI": { exportClearance: 13.3333, importClearance: 76, rates: [117.5986, 117.5986, 117.5986, 117.5986] },
-                "XIAMEN": { exportClearance: 17.7777, importClearance: 76, rates: [118.1152, 118.1152, 118.1152, 118.1152] },
-                "QINGDAO": { exportClearance: 20.4444, importClearance: 76, rates: [114.8875, 114.8875, 114.8875, 114.8875] },
-                "SHENZHEN": { exportClearance: 24.8888, importClearance: 76, rates: [122.2083, 122.2083, 122.2083, 122.2083] }
+                "NINGBO": { exportClearance: 86.6666, reserved: 0, rates: [118.0569, 118.0569, 118.0569, 118.0569] },
+                "SHANGHAI": { exportClearance: 89.3333, reserved: 0, rates: [117.5986, 117.5986, 117.5986, 117.5986] },
+                "XIAMEN": { exportClearance: 93.7777, reserved: 0, rates: [118.1152, 118.1152, 118.1152, 118.1152] },
+                "QINGDAO": { exportClearance: 96.4444, reserved: 0, rates: [114.8875, 114.8875, 114.8875, 114.8875] },
+                "SHENZHEN": { exportClearance: 100.8888, reserved: 0, rates: [122.2083, 122.2083, 122.2083, 122.2083] }
             };
 
             // Air freight rates
@@ -3060,6 +3302,10 @@ function customAlert(message) {
             // 导航点击事件
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
+					//判断：如果链接有 data-external 属性，则放行
+					if (this.hasAttribute('data-external')) {
+						return true; // 允许默认跳转行为
+					}
                     e.preventDefault();
                     
                     const targetPage = this.getAttribute('data-page');
@@ -3421,7 +3667,7 @@ function customAlert(message) {
                 
                 // 7. AGL AMP LCL
                 const ampLclData = ampLclRates[lclPol] || ampLclRates["SHENZHEN"];
-                const ampLclFixedFee = ampLclData.exportClearance + ampLclData.importClearance;
+                const ampLclFixedFee = ampLclData.exportClearance + ampLclData.reserved;
                 const ampLclRatePerCBM = getLclRate(ampLclData, shipmentVolume);
                 const ampLclDuty = totalUnitsLCL * declareValueAGL * tariffRate;
                 const ampLclCost = ampLclFixedFee + (ampLclRatePerCBM * shipmentVolume) + ampLclDuty;
@@ -3433,7 +3679,7 @@ function customAlert(message) {
                 
                 // 8. AGL MSS LCL - West
                 const mssLclWestData = mssLclWestRates[lclPol] || mssLclWestRates["SHENZHEN"];
-                const mssLclWestFixedFee = mssLclWestData.exportClearance + mssLclWestData.importClearance;
+                const mssLclWestFixedFee = mssLclWestData.exportClearance + mssLclWestData.reserved;
                 const mssLclWestRatePerCBM = getLclRate(mssLclWestData, shipmentVolume);
                 const mssLclWestIB = ibFeeWest * totalUnitsLCL;
                 const mssLclWestDuty = totalUnitsLCL * declareValueAGL * tariffRate;
@@ -3446,7 +3692,7 @@ function customAlert(message) {
                 
                 // 9. AGL MSS LCL - East
                 const mssLclEastData = mssLclEastRates[lclPol] || mssLclEastRates["SHENZHEN"];
-                const mssLclEastFixedFee = mssLclEastData.exportClearance + mssLclEastData.importClearance;
+                const mssLclEastFixedFee = mssLclEastData.exportClearance + mssLclEastData.reserved;
                 const mssLclEastRatePerCBM = getLclRate(mssLclEastData, shipmentVolume);
                 const mssLclEastIB = ibFeeEast * totalUnitsLCL;
                 const mssLclEastDuty = totalUnitsLCL * declareValueAGL * tariffRate;
@@ -4010,5 +4256,19 @@ function customAlert(message) {
         </button>
     </div>
 </div>
+
+<script>
+// 自动设置邮件链接的版本号
+document.addEventListener('DOMContentLoaded', function() {
+    const version = getComputedStyle(document.querySelector('.sidebar'), '::after')
+        .content.replace(/"/g, '');
+    
+    const mailtoLink = document.querySelector('.nav-link[href^="mailto:"]');
+    if (mailtoLink) {
+        mailtoLink.href = `mailto:yannya@amazon.com?cc=gm-bd-enablement@amazon.com&subject=Sales Toolkits Feedback - ${version}`;
+    }
+});
+</script>
+
 </body>
 </html>
