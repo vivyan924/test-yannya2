@@ -89,7 +89,7 @@
         }
         
         function handleDevToolsDetection() {
-            document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;"><h2>Access Restricted</h2><p>Developer tools are not permitted on this page.</p><p>Please refresh the page to continue.</p></div>';
+            document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;"><h2>Access Restricted</h2><p>Please refresh the page to continue.</p></div>';
             throw new Error('Developer tools detected');
         }
         
