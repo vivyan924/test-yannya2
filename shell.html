@@ -1,0 +1,22 @@
+// 动态加载内容
+function loadContent() {
+    // 使用Base64编码或其他简单混淆方法隐藏真实URL
+    const contentUrl = atob('aHR0cHM6Ly9Zb3VyR2l0aHViVXNlcm5hbWUuZ2l0aHViLmlvL1JlcG9zaXRvcnlOYW1lL2NvbnRlbnQuaHRtbA==');
+    
+    // 创建iframe来加载内容
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '100vh';
+    iframe.style.border = 'none';
+    iframe.src = contentUrl;
+    
+    // 隐藏加载指示器，显示内容
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content-container').appendChild(iframe);
+}
+
+// 页面加载完成后执行
+document.addEventListener('DOMContentLoaded', function() {
+    // 添加一些延迟，使URL更难以追踪
+    setTimeout(loadContent, 1000);
+});
