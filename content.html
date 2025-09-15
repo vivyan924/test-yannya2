@@ -4162,18 +4162,49 @@ function customAlert(message) {
         });
     </script>
 
-<script>
-// 自动设置邮件链接的版本号
-document.addEventListener('DOMContentLoaded', function() {
-    const version = getComputedStyle(document.querySelector('.sidebar'), '::after')
-        .content.replace(/"/g, '');
-    
-    const mailtoLink = document.querySelector('.nav-link[href^="mailto:"]');
-    if (mailtoLink) {
-        mailtoLink.href = `mailto:yannya@amazon.com?cc=gm-bd-enablement@amazon.com&subject=Sales Toolkits Feedback - ${version}`;
-    }
-});
-</script>
+	<script>
+	// 禁用右键菜单
+	document.addEventListener('contextmenu', function(e) {
+		e.preventDefault();
+		// 可以添加一个提示
+		// alert('右键菜单已被禁用');
+	});
+
+	// 禁用文本选择（谨慎使用，影响用户体验）
+	/*document.addEventListener('selectstart', function(e) {
+		e.preventDefault();
+	}); */
+
+	// 禁用常见保存快捷键 (Ctrl+S, Ctrl+U, F12等)
+	document.addEventListener('keydown', function(e) {
+		// 禁用 Ctrl+S
+		if (e.ctrlKey && e.key === 's') {
+			e.preventDefault();
+			alert('网页保存功能已被禁用');
+		}
+		// 禁用 Ctrl+U (查看源代码)
+		if (e.ctrlKey && e.key === 'u') {
+			e.preventDefault();
+		}
+		// 禁用 F12 (开发者工具)
+		if (e.key === 'F12') {
+			e.preventDefault();
+		}
+		// 禁用 Ctrl+Shift+I (开发者工具)
+		if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+			e.preventDefault();
+		}
+		// 禁用 Ctrl+Shift+C (检查元素)
+		if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+			e.preventDefault();
+		}
+		// 禁用 Ctrl+Shift+J (JavaScript控制台)
+		if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+			e.preventDefault();
+		}
+	});
+	</script>
+
 
 </body>
 </html>
