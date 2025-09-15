@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>外壳页面</title>
+    <title>demo</title>
     <style>
         /* 隐藏iframe直到加载完成 */
         #contentFrame {
@@ -23,16 +23,13 @@
     <iframe id="contentFrame" title="隐藏内容"></iframe>
 
     <script>
-        // 动态设置iframe的src，指向同一个仓库中的content.html
         const contentUrl = 'https://vivyan924.github.io/test-yannya2/content.html'; // 同目录下
 
         document.getElementById('contentFrame').onload = function() {
-            // 内容加载完成后，隐藏加载提示并显示iframe
             document.getElementById('loading').style.display = 'none';
             document.getElementById('contentFrame').style.display = 'block';
         };
 
-        // 设置iframe的src，开始加载
         document.getElementById('contentFrame').src = contentUrl;
     </script>
 </body>
