@@ -887,48 +887,6 @@
             text-decoration: underline;
         }
         
-        .password-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-        
-        .password-container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-        
-        .password-container h2 {
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-        
-        .password-container input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-        
-        .password-container .error {
-            color: var(--danger);
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
         
         /* For cargo detail and duty cost sections */
         .compact-row {
@@ -1230,7 +1188,7 @@
 		
 		/* 版本号显示样式 - 添加到CSS最后 */
 			.sidebar::after {
-				content: "20250818v01"; /* 这里设置您的版本号 */
+				content: "20250912v01"; /* 这里设置您的版本号 */
 				display: block;
 				position: fixed;
 				bottom: 10px;
@@ -1272,18 +1230,6 @@
 		<div class="watermark-text" style="top: 10%; left: 90%;">For internal, do not share</div>
 	</div>
     
-    <div class="password-modal" id="passwordModal">
-        <div class="password-container">
-            <h2><i class="fas fa-lock"></i> Access Required</h2>
-			<p>Find latest release and user guide from this <a href="https://quip-amazon.com/6pfAA81Mtbkl#ZIC9AAT8P8V" target=“_blank” class="contact-link">Quip</a>.</p>
-            <input type="password" id="passwordInput" placeholder="Enter password">
-            <p class="error" id="passwordError" style="display:none;">Incorrect password. Please try again.</p>
-            <button class="btn" id="passwordSubmit">
-                <i class="fas fa-unlock"></i> Unlock
-            </button>
-        </div>
-    </div>
-    
     <div class="sidebar">
         <div class="logo-container">
             <div class="logo-en">Sales Toolkits</div>
@@ -1291,38 +1237,38 @@
         
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="#" class="nav-link" data-page="home">
+                <a href="javascript:void(0)" class="nav-link" data-page="home">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
             </li>
             <li class="nav-divider"></li>
             <li class="nav-item">
-                <a href="#" class="nav-link active" data-page="ocean">
+                <a href="javascript:void(0)" class="nav-link active" data-page="ocean">
                     <i class="fas fa-ship"></i>
                     <span>Ocean Freight Cost</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link" data-page="air">
+                <a href="javascript:void(0)" class="nav-link" data-page="air">
                     <i class="fas fa-plane"></i>
                     <span>Air Freight Cost</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link" data-page="knowledge">
+                <a href="javascript:void(0)" class="nav-link" data-page="knowledge">
                     <i class="fas fa-book"></i>
                     <span>Knowledge Center</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link" data-page="course">
+                <a href="javascript:void(0)" class="nav-link" data-page="course">
                     <i class="fas fa-graduation-cap"></i>
                     <span>Training Courses</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link" data-page="demo">
+                <a href="javascript:void(0)" class="nav-link" data-page="demo">
                     <i class="fas fa-desktop"></i>
                     <span>System Demo</span>
                 </a>
@@ -1339,15 +1285,12 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a 
-						href="mailto:yannya@amazon.com?
-						subject=Sales toolkit feedback&
-						cc=gm-bd-enablement@amazon.com&
-						body=Description" 
+					<a href="https://quip-amazon.com/6pfAA81Mtbkl/AGL-Sales-Toolkits#temp:C:ZICaaaad8c7bae24084af3a63147" 
+					   target="_blank" 
 						class="nav-link" 
 						data-external>
 						<i class="fas fa-envelope"></i>
-						<span>Email Us >></span>
+						<span>Feedback >></span>
 					</a>
 				</li>
 			
@@ -1436,7 +1379,7 @@
                             
                             <div class="input-group">
                                 <label>LCL kg per CBM</label>
-                                <input type="number" id="lclKgPerCBM" min="1" value="350">
+                                <input type="number" id="lclKgPerCBM" min="1" value="200">
                             </div>
                         </div>
                         
@@ -1455,11 +1398,11 @@
                             <div class="input-group">
                                 <label>West IB Fee ($/unit)</label>
                                 <select id="ibFeeWest">
-                                    <option value="0.3">0.3</option>
+                                    <option value="0.3" selected>0.3</option>
                                     <option value="0.34">0.34</option>
                                     <option value="0.41">0.41</option>
                                     <option value="0.49">0.49</option>
-                                    <option value="0.68" selected>0.68</option>
+                                    <option value="0.68">0.68</option>
                                     <option value="1.6">1.6</option>
                                 </select>
                             </div>
@@ -1467,11 +1410,11 @@
                             <div class="input-group">
                                 <label>East IB Fee ($/unit)</label>
                                 <select id="ibFeeEast">
-                                    <option value="0.16">0.16</option>
+                                    <option value="0.16" selected>0.16</option>
                                     <option value="0.18">0.18</option>
                                     <option value="0.22">0.22</option>
                                     <option value="0.27">0.27</option>
-                                    <option value="0.37" selected>0.37</option>
+                                    <option value="0.37">0.37</option>
                                     <option value="1.1">1.1</option>
                                 </select>
                             </div>
@@ -1766,27 +1709,27 @@
                         <div class="compact-lcl-params" id="tpl-lcl-params">
                             <div class="param-item">
                                 <label>3PL WC RMB/kg (duty incl.)</label>
-                                <input type="number" id="customTplWestRmbPerKg" value="5.83">
+                                <input type="number" id="customTplWestRmbPerKg" value="4.61">
                             </div>
                             <div class="param-item">
                                 <label>3PL EC RMB/kg (duty incl.)</label>
-                                <input type="number" id="customTplEastRmbPerKg" value="6.14">
+                                <input type="number" id="customTplEastRmbPerKg" value="5.47">
                             </div>
                             <div class="param-item">
                                 <label>3PL CC RMB/kg (duty incl.)</label>
-                                <input type="number" id="customTplCentralRmbPerKg" value="6.60">
+                                <input type="number" id="customTplCentralRmbPerKg" value="6.48">
                             </div>
                             <div class="param-item">
                                 <label>3PL WC RMB/CBM (duty excl.)</label>
-                                <input type="number" id="customTplWestRmbPerCbm" value="719.78">
+                                <input type="number" id="customTplWestRmbPerCbm" value="663.12">
                             </div>
                             <div class="param-item">
                                 <label>3PL EC RMB/CBM (duty excl.)</label>
-                                <input type="number" id="customTplEastRmbPerCbm" value="934.10">
+                                <input type="number" id="customTplEastRmbPerCbm" value="815.76">
                             </div>
                             <div class="param-item">
                                 <label>3PL CC RMB/CBM (duty excl.)</label>
-                                <input type="number" id="customTplCentralRmbPerCbm" value="1006.87">
+                                <input type="number" id="customTplCentralRmbPerCbm" value="982.8">
                             </div>
                         </div>
                         
@@ -1814,7 +1757,7 @@
                         <h3><i class="fas fa-info-circle"></i> Ocean Freight Cost Calculator Instructions</h3>
                         
                         <div class="file-info">
-                            <h4>AGL Rate Card Version: valid from Aug 5, 2025</h4>
+                            <h4>AGL Rate Card Version: valid from Aug 29, 2025</h4>
                         </div>
                         
                         <h3>AGL FCL Rates</h3>
@@ -1844,7 +1787,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8561</td>
+                                    <td>8521</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1856,7 +1799,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8504</td>
+                                    <td>8464</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1868,7 +1811,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8564</td>
+                                    <td>8524</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1880,7 +1823,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8554</td>
+                                    <td>8514</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1892,7 +1835,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8555</td>
+                                    <td>8515</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1904,7 +1847,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8564</td>
+                                    <td>8524</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1916,7 +1859,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8547</td>
+                                    <td>8507</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1928,7 +1871,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8529</td>
+                                    <td>8489</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1940,7 +1883,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8554</td>
+                                    <td>8514</td>
                                 </tr>
                                 <tr>
                                     <td>US</td>
@@ -1952,7 +1895,7 @@
                                     <td>US West</td>
                                     <td>Sort</td>
                                     <td>106</td>
-                                    <td>8555</td>
+                                    <td>8515</td>
                                 </tr>
 								
 								<tr>
@@ -1965,7 +1908,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4256</td>
+									<td>4202</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -1977,7 +1920,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4199</td>
+									<td>4159</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -1989,7 +1932,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4259</td>
+									<td>4210</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -2001,7 +1944,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4249</td>
+									<td>4219</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -2013,7 +1956,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4250</td>
+									<td>4219</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -2025,7 +1968,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4259</td>
+									<td>4209</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -2037,7 +1980,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4242</td>
+									<td>4210</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -2049,7 +1992,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4224</td>
+									<td>4209</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -2061,7 +2004,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4249</td>
+									<td>4216</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -2073,7 +2016,7 @@
 									<td>US West</td>
 									<td>Sort</td>
 									<td>106</td>
-									<td>4250</td>
+									<td>4184</td>
 								</tr>
 								<tr>
 									<td>US</td>
@@ -2474,7 +2417,7 @@
                                     <li>Mid-East: 22.3%</li>
                                     <li>South East: 16.9%</li>
                                     <li>North East: 14.7%</li>
-                                    <li>Central: 24.9%</li>
+                                    <li>Central: 21.2%</li>
                                 </ul>
                             </div>
                         </div>
@@ -2586,11 +2529,11 @@
                             <div class="input-group">
                                 <label>West IB Fee ($/unit)</label>
                                 <select id="ibFeeWest-air">
-                                    <option value="0.3">0.3</option>
+                                    <option value="0.3" selected>0.3</option>
                                     <option value="0.34">0.34</option>
                                     <option value="0.41">0.41</option>
                                     <option value="0.49">0.49</option>
-                                    <option value="0.68" selected>0.68</option>
+                                    <option value="0.68">0.68</option>
                                     <option value="1.6">1.6</option>
                                 </select>
                             </div>
@@ -2766,75 +2709,75 @@
                                 <div class="param-grid">
                                     <div class="param-item">
                                         <label>HKG-WC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgHkgWc70" value="51.48">
+                                        <input type="number" id="customTplPerKgHkgWc70" value="50.688">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-WC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgHkgWc99" value="51.48">
+                                        <input type="number" id="customTplPerKgHkgWc99" value="50.688">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-WC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgHkgWc100" value="50.47">
+                                        <input type="number" id="customTplPerKgHkgWc100" value="49.752">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-EC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgHkgEc70" value="54.72">
+                                        <input type="number" id="customTplPerKgHkgEc70" value="54">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-EC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgHkgEc99" value="54.72">
+                                        <input type="number" id="customTplPerKgHkgEc99" value="54">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-EC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgHkgEc100" value="53.50">
+                                        <input type="number" id="customTplPerKgHkgEc100" value="52.704">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-CC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgHkgCc70" value="53.78">
+                                        <input type="number" id="customTplPerKgHkgCc70" value="52.992">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-CC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgHkgCc99" value="53.78">
+                                        <input type="number" id="customTplPerKgHkgCc99" value="52.992">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG-CC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgHkgCc100" value="52.49">
+                                        <input type="number" id="customTplPerKgHkgCc100" value="51.768">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-WC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgPvgWc70" value="45.80">
+                                        <input type="number" id="customTplPerKgPvgWc70" value="42.768">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-WC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgPvgWc99" value="45.80">
+                                        <input type="number" id="customTplPerKgPvgWc99" value="42.768">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-WC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgPvgWc100" value="41.69">
+                                        <input type="number" id="customTplPerKgPvgWc100" value="38.664">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-EC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgPvgEc70" value="47.81">
+                                        <input type="number" id="customTplPerKgPvgEc70" value="44.784">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-EC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgPvgEc99" value="47.81">
+                                        <input type="number" id="customTplPerKgPvgEc99" value="44.784">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-EC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgPvgEc100" value="44.71">
+                                        <input type="number" id="customTplPerKgPvgEc100" value="41.688">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-CC &lt;=70KG</label>
-                                        <input type="number" id="customTplPerKgPvgCc70" value="46.8">
+                                        <input type="number" id="customTplPerKgPvgCc70" value="43.776">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-CC 71-99KG</label>
-                                        <input type="number" id="customTplPerKgPvgCc99" value="46.8">
+                                        <input type="number" id="customTplPerKgPvgCc99" value="43.776">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG-CC &gt;=100KG</label>
-                                        <input type="number" id="customTplPerKgPvgCc100" value="43.70">
+                                        <input type="number" id="customTplPerKgPvgCc100" value="40.68">
                                     </div>
                                     
                                     <div class="param-item special-cargo-item">
@@ -2850,27 +2793,27 @@
                                 <div class="param-grid">
                                     <div class="param-item">
                                         <label>HKG &lt;=70KG</label>
-                                        <input type="number" id="customTplExpressPerKgHkg70" value="52.56">
+                                        <input type="number" id="customTplExpressPerKgHkg70" value="48.96">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG 71-99KG</label>
-                                        <input type="number" id="customTplExpressPerKgHkg99" value="52.56">
+                                        <input type="number" id="customTplExpressPerKgHkg99" value="48.96">
                                     </div>
                                     <div class="param-item">
                                         <label>HKG &gt;=100KG</label>
-                                        <input type="number" id="customTplExpressPerKgHkg100" value="51.84">
+                                        <input type="number" id="customTplExpressPerKgHkg100" value="48.384">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG &lt;=70KG</label>
-                                        <input type="number" id="customTplExpressPerKgPvg70" value="51.56">
+                                        <input type="number" id="customTplExpressPerKgPvg70" value="47.96">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG 71-99KG</label>
-                                        <input type="number" id="customTplExpressPerKgPvg99" value="51.56">
+                                        <input type="number" id="customTplExpressPerKgPvg99" value="47.96">
                                     </div>
                                     <div class="param-item">
                                         <label>PVG &gt;=100KG</label>
-                                        <input type="number" id="customTplExpressPerKgPvg100" value="50.84">
+                                        <input type="number" id="customTplExpressPerKgPvg100" value="47.384">
                                     </div>
                                     
                                     <div class="param-item special-cargo-item">
@@ -2905,7 +2848,7 @@
                         <h3><i class="fas fa-info-circle"></i> Air Freight Cost Calculator Instructions</h3>
                         
                         <div class="file-info">
-                            <h4>AGL Rate Card Version: valid from Aug 7, 2025</h4>
+                            <h4>AGL Rate Card Version: valid from Aug 26, 2025</h4>
                         </div>
                         
                         <h3>AGL Rate Card</h3>
@@ -2926,64 +2869,64 @@
                                     <td>DDP/EXW</td>
                                     <td>MSS</td>
                                     <td>HongKong</td>
-                                    <td>804.800</td>
-                                    <td>46.885</td>
+                                    <td>825.000</td>
+                                    <td>48.784</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>DDP/EXW</td>
                                     <td>MSS</td>
                                     <td>Shanghai</td>
-                                    <td>704.800</td>
-                                    <td>46.665</td>
+                                    <td>713.880</td>
+                                    <td>44.084</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>DDP/EXW</td>
                                     <td>AMP</td>
                                     <td>HongKong</td>
-                                    <td>804.800</td>
-                                    <td>54.845</td>
+                                    <td>825.000</td>
+                                    <td>56.776</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>DDP/EXW</td>
                                     <td>AMP</td>
                                     <td>Shanghai</td>
-                                    <td>704.800</td>
-                                    <td>54.625</td>
+                                    <td>713.880</td>
+                                    <td>52.076</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>FOB</td>
                                     <td>MSS</td>
                                     <td>HongKong</td>
-                                    <td>554.800</td>
-                                    <td>41.385</td>
+                                    <td>547.200</td>
+                                    <td>42.672</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>FOB</td>
                                     <td>MSS</td>
                                     <td>Shanghai</td>
-                                    <td>554.800</td>
-                                    <td>45.665</td>
+                                    <td>547.200</td>
+                                    <td>42.972</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>FOB</td>
                                     <td>AMP</td>
                                     <td>HongKong</td>
-                                    <td>554.800</td>
-                                    <td>49.345</td>
+                                    <td>547.200</td>
+                                    <td>50.664</td>
                                 </tr>
                                 <tr>
                                     <td>RMB</td>
                                     <td>FOB</td>
                                     <td>AMP</td>
                                     <td>Shanghai</td>
-                                    <td>554.800</td>
-                                    <td>53.625</td>
+                                    <td>547.200</td>
+                                    <td>50.964</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -3075,47 +3018,18 @@ function customAlert(message) {
 }
         // Password validation logic
         document.addEventListener('DOMContentLoaded', function() {
-            const passwordModal = document.getElementById('passwordModal');
-            const passwordInput = document.getElementById('passwordInput');
-            const passwordError = document.getElementById('passwordError');
-            const passwordSubmit = document.getElementById('passwordSubmit');
-            
-            // Get current date (month and day)
-            const now = new Date();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const requiredPassword = `aglc${month}${day}`;
-            
-            // Show password modal
-            passwordModal.style.display = 'flex';
-            
-            // Submit password
-            passwordSubmit.addEventListener('click', function() {
-                if (passwordInput.value === requiredPassword) {
-                    passwordModal.style.display = 'none';
-                } else {
-                    passwordError.style.display = 'block';
-                }
-            });
-            
-            // Press Enter to submit
-            passwordInput.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    passwordSubmit.click();
-                }
-            });
             
             // 初始化预设参数
             let oceanPresetRates = {
                 tplWestFclRate: 3607,
                 tplEastFclRate: 4897,
                 tplCentralFclRate: 4220,
-                tplWestRmbPerKg: 5.83,
-                tplEastRmbPerKg: 6.14,
-                tplCentralRmbPerKg: 6.60,
-                tplWestRmbPerCbm: 719.78,
-                tplEastRmbPerCbm: 934.10,
-                tplCentralRmbPerCbm: 1006.87,
+                tplWestRmbPerKg: 4.61,
+                tplEastRmbPerKg: 5.47,
+                tplCentralRmbPerKg: 6.48,
+                tplWestRmbPerCbm: 663.12,
+                tplEastRmbPerCbm: 815.76,
+                tplCentralRmbPerCbm: 982.8,
                 exchangeRate: 7.2
             };
             
@@ -3168,35 +3082,35 @@ function customAlert(message) {
                     midEast: 0.223,
                     southEast: 0.169,
                     northEast: 0.147,
-                    central: 0.249
+                    central: 0.212
                 }
             };
             
             // FCL 40HC费用映射表
             const ampFclBooking40HCRates = {
-                "NINGBO": 8561,
-                "YANTIAN": 8504,
-                "SHANGHAI": 8564,
-                "XIAMEN": 8554,
-                "QINGDAO": 8555,
-                "TIANJIN": 8564,
-                "FUZHOU": 8547,
-                "HONGKONG": 8529,
-                "ZHUHAI": 8554,
-                "LIANYUNGANG": 8555
+                "NINGBO": 8521,
+                "YANTIAN": 8464,
+                "SHANGHAI": 8524,
+                "XIAMEN": 8514,
+                "QINGDAO": 8515,
+                "TIANJIN": 8524,
+                "FUZHOU": 8507,
+                "HONGKONG": 8489,
+                "ZHUHAI": 8514,
+                "LIANYUNGANG": 8515
             };
             
             const mssFclBooking40HCWestRates = {
-                "NINGBO": 4256,
-                "YANTIAN": 4199,
-                "SHANGHAI": 4259,
-                "XIAMEN": 4249,
-                "QINGDAO": 4250,
-                "TIANJIN": 4259,
-                "FUZHOU": 4242,
-                "HONGKONG": 4224,
-                "ZHUHAI": 4249,
-                "LIANYUNGANG": 4250
+                "NINGBO": 4202,
+                "YANTIAN": 4159,
+                "SHANGHAI": 4210,
+                "XIAMEN": 4219,
+                "QINGDAO": 4219,
+                "TIANJIN": 4209,
+                "FUZHOU": 4210,
+                "HONGKONG": 4209,
+                "ZHUHAI": 4216,
+                "LIANYUNGANG": 4184
             };
             
             const mssFclBooking40HCEastRates = {
@@ -3241,30 +3155,30 @@ function customAlert(message) {
             const airAglRates = {
                 "HONGKONG": {
                     "DDP": {
-                        "MSS": { fixed: 804.800, perKg: 46.885 },
-                        "AMP": { fixed: 804.800, perKg: 54.845 }
+                        "MSS": { fixed: 825.000, perKg: 48.784 },
+                        "AMP": { fixed: 825.000, perKg: 56.776 }
                     },
                     "EXW": {
-                        "MSS": { fixed: 804.800, perKg: 46.885 },
-                        "AMP": { fixed: 804.800, perKg: 54.845 }
+                        "MSS": { fixed: 825.000, perKg: 48.784 },
+                        "AMP": { fixed: 825.000, perKg: 56.776 }
                     },
                     "FOB": {
-                        "MSS": { fixed: 554.800, perKg: 41.385 },
-                        "AMP": { fixed: 554.800, perKg: 49.345 }
+                        "MSS": { fixed: 547.200, perKg: 42.672 },
+                        "AMP": { fixed: 547.200, perKg: 50.664 }
                     }
                 },
                 "SHANGHAI": {
                     "DDP": {
-                        "MSS": { fixed: 704.800, perKg: 46.665 },
-                        "AMP": { fixed: 704.800, perKg: 54.625 }
+                        "MSS": { fixed: 713.880, perKg: 44.084 },
+                        "AMP": { fixed: 713.880, perKg: 52.076 }
                     },
                     "EXW": {
-                        "MSS": { fixed: 704.800, perKg: 46.665 },
-                        "AMP": { fixed: 704.800, perKg: 54.625 }
+                        "MSS": { fixed: 713.880, perKg: 44.084 },
+                        "AMP": { fixed: 713.880, perKg: 52.076 }
                     },
                     "FOB": {
-                        "MSS": { fixed: 554.800, perKg: 45.665 },
-                        "AMP": { fixed: 554.800, perKg: 53.625 }
+                        "MSS": { fixed: 547.200, perKg: 42.972 },
+                        "AMP": { fixed: 547.200, perKg: 50.964 }
                     }
                 }
             };
@@ -3992,7 +3906,7 @@ function customAlert(message) {
                 const volumeCBM = parseFloat(document.getElementById('volumeCBM').value) || 2;
                 const declareValueAGL = parseFloat(document.getElementById('declareValueAGL-air').value) || 1;
                 const declareValue3PL = parseFloat(document.getElementById('declareValue3PL-air').value) || 1;
-                const ibFeeWest = parseFloat(document.getElementById('ibFeeWest-air').value) || 0.68;
+                const ibFeeWest = parseFloat(document.getElementById('ibFeeWest-air').value) || 0.3;
                 const exchangeRate = parseFloat(document.getElementById('customAirExchangeRate').value) || 7.2;
                 const tplSpecialCargo = parseFloat(document.getElementById('customTplSpecialCargo').value) || 0;
                 const tplExpressSpecialCargo = parseFloat(document.getElementById('customTplExpressSpecialCargo').value) || 0;
@@ -4167,32 +4081,32 @@ function customAlert(message) {
             // 应用自定义空运费率
             document.getElementById('applyAirCustomRatesBtn').addEventListener('click', function() {
                 // 更新3PL费率
-                currentAirRates.tplPerKgHkgWc70 = parseFloat(document.getElementById('customTplPerKgHkgWc70').value) || 51.48;
-                currentAirRates.tplPerKgHkgWc99 = parseFloat(document.getElementById('customTplPerKgHkgWc99').value) || 51.48;
-                currentAirRates.tplPerKgHkgWc100 = parseFloat(document.getElementById('customTplPerKgHkgWc100').value) || 50.47;
-                currentAirRates.tplPerKgHkgEc70 = parseFloat(document.getElementById('customTplPerKgHkgEc70').value) || 54.72;
-                currentAirRates.tplPerKgHkgEc99 = parseFloat(document.getElementById('customTplPerKgHkgEc99').value) || 54.72;
-                currentAirRates.tplPerKgHkgEc100 = parseFloat(document.getElementById('customTplPerKgHkgEc100').value) || 53.50;
-                currentAirRates.tplPerKgHkgCc70 = parseFloat(document.getElementById('customTplPerKgHkgCc70').value) || 53.78;
-                currentAirRates.tplPerKgHkgCc99 = parseFloat(document.getElementById('customTplPerKgHkgCc99').value) || 53.78;
-                currentAirRates.tplPerKgHkgCc100 = parseFloat(document.getElementById('customTplPerKgHkgCc100').value) || 52.49;
-                currentAirRates.tplPerKgPvgWc70 = parseFloat(document.getElementById('customTplPerKgPvgWc70').value) || 45.80;
-                currentAirRates.tplPerKgPvgWc99 = parseFloat(document.getElementById('customTplPerKgPvgWc99').value) || 45.80;
-                currentAirRates.tplPerKgPvgWc100 = parseFloat(document.getElementById('customTplPerKgPvgWc100').value) || 41.69;
-                currentAirRates.tplPerKgPvgEc70 = parseFloat(document.getElementById('customTplPerKgPvgEc70').value) || 47.81;
-                currentAirRates.tplPerKgPvgEc99 = parseFloat(document.getElementById('customTplPerKgPvgEc99').value) || 47.81;
-                currentAirRates.tplPerKgPvgEc100 = parseFloat(document.getElementById('customTplPerKgPvgEc100').value) || 44.71;
-                currentAirRates.tplPerKgPvgCc70 = parseFloat(document.getElementById('customTplPerKgPvgCc70').value) || 46.8;
-                currentAirRates.tplPerKgPvgCc99 = parseFloat(document.getElementById('customTplPerKgPvgCc99').value) || 46.8;
-                currentAirRates.tplPerKgPvgCc100 = parseFloat(document.getElementById('customTplPerKgPvgCc100').value) || 43.70;
+                currentAirRates.tplPerKgHkgWc70 = parseFloat(document.getElementById('customTplPerKgHkgWc70').value) || 50.688
+                currentAirRates.tplPerKgHkgWc99 = parseFloat(document.getElementById('customTplPerKgHkgWc99').value) || 50.688;
+                currentAirRates.tplPerKgHkgWc100 = parseFloat(document.getElementById('customTplPerKgHkgWc100').value) || 49.752;
+                currentAirRates.tplPerKgHkgEc70 = parseFloat(document.getElementById('customTplPerKgHkgEc70').value) || 54;
+                currentAirRates.tplPerKgHkgEc99 = parseFloat(document.getElementById('customTplPerKgHkgEc99').value) || 54;
+                currentAirRates.tplPerKgHkgEc100 = parseFloat(document.getElementById('customTplPerKgHkgEc100').value) || 52.704;
+                currentAirRates.tplPerKgHkgCc70 = parseFloat(document.getElementById('customTplPerKgHkgCc70').value) || 52.992;
+                currentAirRates.tplPerKgHkgCc99 = parseFloat(document.getElementById('customTplPerKgHkgCc99').value) || 52.992;
+                currentAirRates.tplPerKgHkgCc100 = parseFloat(document.getElementById('customTplPerKgHkgCc100').value) || 51.768;
+                currentAirRates.tplPerKgPvgWc70 = parseFloat(document.getElementById('customTplPerKgPvgWc70').value) || 42.768;
+                currentAirRates.tplPerKgPvgWc99 = parseFloat(document.getElementById('customTplPerKgPvgWc99').value) || 42.768;
+                currentAirRates.tplPerKgPvgWc100 = parseFloat(document.getElementById('customTplPerKgPvgWc100').value) || 38.664;
+                currentAirRates.tplPerKgPvgEc70 = parseFloat(document.getElementById('customTplPerKgPvgEc70').value) || 44.784;
+                currentAirRates.tplPerKgPvgEc99 = parseFloat(document.getElementById('customTplPerKgPvgEc99').value) || 44.784;
+                currentAirRates.tplPerKgPvgEc100 = parseFloat(document.getElementById('customTplPerKgPvgEc100').value) || 41.688;
+                currentAirRates.tplPerKgPvgCc70 = parseFloat(document.getElementById('customTplPerKgPvgCc70').value) || 43.776;
+                currentAirRates.tplPerKgPvgCc99 = parseFloat(document.getElementById('customTplPerKgPvgCc99').value) || 43.776;
+                currentAirRates.tplPerKgPvgCc100 = parseFloat(document.getElementById('customTplPerKgPvgCc100').value) || 40.68;
                 
                 // 更新快递费率
-                currentAirRates.tplExpressPerKgHkg70 = parseFloat(document.getElementById('customTplExpressPerKgHkg70').value) || 52.56;
-                currentAirRates.tplExpressPerKgHkg99 = parseFloat(document.getElementById('customTplExpressPerKgHkg99').value) || 52.56;
-                currentAirRates.tplExpressPerKgHkg100 = parseFloat(document.getElementById('customTplExpressPerKgHkg100').value) || 51.84;
-                currentAirRates.tplExpressPerKgPvg70 = parseFloat(document.getElementById('customTplExpressPerKgPvg70').value) || 51.56;
-                currentAirRates.tplExpressPerKgPvg99 = parseFloat(document.getElementById('customTplExpressPerKgPvg99').value) || 51.56;
-                currentAirRates.tplExpressPerKgPvg100 = parseFloat(document.getElementById('customTplExpressPerKgPvg100').value) || 50.84;
+                currentAirRates.tplExpressPerKgHkg70 = parseFloat(document.getElementById('customTplExpressPerKgHkg70').value) || 48.96;
+                currentAirRates.tplExpressPerKgHkg99 = parseFloat(document.getElementById('customTplExpressPerKgHkg99').value) || 48.96;
+                currentAirRates.tplExpressPerKgHkg100 = parseFloat(document.getElementById('customTplExpressPerKgHkg100').value) || 48.384;
+                currentAirRates.tplExpressPerKgPvg70 = parseFloat(document.getElementById('customTplExpressPerKgPvg70').value) || 47.96;
+                currentAirRates.tplExpressPerKgPvg99 = parseFloat(document.getElementById('customTplExpressPerKgPvg99').value) || 47.96;
+                currentAirRates.tplExpressPerKgPvg100 = parseFloat(document.getElementById('customTplExpressPerKgPvg100').value) || 47.384;
                 
                 // 更新特殊货物附加费
                 currentAirRates.tplSpecialCargo = parseFloat(document.getElementById('customTplSpecialCargo').value) || 0;
@@ -4212,30 +4126,30 @@ function customAlert(message) {
                 currentAirRates = {...airPresetRates};
                 
                 // 重置所有输入字段
-                document.getElementById('customTplPerKgHkgWc70').value = 51.48;
-                document.getElementById('customTplPerKgHkgWc99').value = 51.48;
-                document.getElementById('customTplPerKgHkgWc100').value = 50.47;
-                document.getElementById('customTplPerKgHkgEc70').value = 54.72;
-                document.getElementById('customTplPerKgHkgEc99').value = 54.72;
-                document.getElementById('customTplPerKgHkgEc100').value = 53.50;
-                document.getElementById('customTplPerKgHkgCc70').value = 53.78;
-                document.getElementById('customTplPerKgHkgCc99').value = 53.78;
-                document.getElementById('customTplPerKgHkgCc100').value = 52.49;
-                document.getElementById('customTplPerKgPvgWc70').value = 45.80;
-                document.getElementById('customTplPerKgPvgWc99').value = 45.80;
-                document.getElementById('customTplPerKgPvgWc100').value = 41.69;
-                document.getElementById('customTplPerKgPvgEc70').value = 47.81;
-                document.getElementById('customTplPerKgPvgEc99').value = 47.81;
-                document.getElementById('customTplPerKgPvgEc100').value = 44.71;
-                document.getElementById('customTplPerKgPvgCc70').value = 46.8;
-                document.getElementById('customTplPerKgPvgCc99').value = 46.8;
-                document.getElementById('customTplPerKgPvgCc100').value = 43.70;
-                document.getElementById('customTplExpressPerKgHkg70').value = 52.56;
-                document.getElementById('customTplExpressPerKgHkg99').value = 52.56;
-                document.getElementById('customTplExpressPerKgHkg100').value = 51.84;
-                document.getElementById('customTplExpressPerKgPvg70').value = 51.56;
-                document.getElementById('customTplExpressPerKgPvg99').value = 51.56;
-                document.getElementById('customTplExpressPerKgPvg100').value = 50.84;
+                document.getElementById('customTplPerKgHkgWc70').value = 50.688;
+                document.getElementById('customTplPerKgHkgWc99').value = 50.688;
+                document.getElementById('customTplPerKgHkgWc100').value = 49.752;
+                document.getElementById('customTplPerKgHkgEc70').value = 54;
+                document.getElementById('customTplPerKgHkgEc99').value = 54;
+                document.getElementById('customTplPerKgHkgEc100').value = 52.704;
+                document.getElementById('customTplPerKgHkgCc70').value = 52.992;
+                document.getElementById('customTplPerKgHkgCc99').value = 52.992;
+                document.getElementById('customTplPerKgHkgCc100').value = 51.768;
+                document.getElementById('customTplPerKgPvgWc70').value = 42.768;
+                document.getElementById('customTplPerKgPvgWc99').value = 42.768;
+                document.getElementById('customTplPerKgPvgWc100').value = 38.664;
+                document.getElementById('customTplPerKgPvgEc70').value = 44.784;
+                document.getElementById('customTplPerKgPvgEc99').value = 44.784;
+                document.getElementById('customTplPerKgPvgEc100').value = 41.688;
+                document.getElementById('customTplPerKgPvgCc70').value = 43.776;
+                document.getElementById('customTplPerKgPvgCc99').value = 43.776;
+                document.getElementById('customTplPerKgPvgCc100').value = 40.68;
+                document.getElementById('customTplExpressPerKgHkg70').value = 48.96;
+                document.getElementById('customTplExpressPerKgHkg99').value = 48.96;
+                document.getElementById('customTplExpressPerKgHkg100').value = 48.384;
+                document.getElementById('customTplExpressPerKgPvg70').value = 47.96;
+                document.getElementById('customTplExpressPerKgPvg99').value = 47.96;
+                document.getElementById('customTplExpressPerKgPvg100').value = 47.384;
                 document.getElementById('customTplSpecialCargo').value = 0;
                 document.getElementById('customTplExpressSpecialCargo').value = 0;
                 document.getElementById('customAirExchangeRate').value = 7.2;
@@ -4247,28 +4161,50 @@ function customAlert(message) {
             });
         });
     </script>
-	<div id="customAlertModal" class="password-modal" style="display: none;">
-    <div class="password-container">
-        <h2><i class="fas fa-info-circle"></i> Notification</h2>
-        <p id="customAlertMessage"></p>
-        <button class="btn" id="customAlertOK">
-            <i class="fas fa-check"></i> OK
-        </button>
-    </div>
-</div>
 
-<script>
-// 自动设置邮件链接的版本号
-document.addEventListener('DOMContentLoaded', function() {
-    const version = getComputedStyle(document.querySelector('.sidebar'), '::after')
-        .content.replace(/"/g, '');
-    
-    const mailtoLink = document.querySelector('.nav-link[href^="mailto:"]');
-    if (mailtoLink) {
-        mailtoLink.href = `mailto:yannya@amazon.com?cc=gm-bd-enablement@amazon.com&subject=Sales Toolkits Feedback - ${version}`;
-    }
-});
-</script>
+	<script>
+	// 禁用右键菜单
+	document.addEventListener('contextmenu', function(e) {
+		e.preventDefault();
+		// 可以添加一个提示
+		// alert('右键菜单已被禁用');
+	});
+
+	// 禁用文本选择（谨慎使用，影响用户体验）
+	document.addEventListener('selectstart', function(e) {
+		e.preventDefault();
+	});
+
+	// 禁用常见保存快捷键 (Ctrl+S, Ctrl+U, F12等)
+	document.addEventListener('keydown', function(e) {
+		// 禁用 Ctrl+S
+		if (e.ctrlKey && e.key === 's') {
+			e.preventDefault();
+			alert('网页保存功能已被禁用');
+		}
+		// 禁用 Ctrl+U (查看源代码)
+		if (e.ctrlKey && e.key === 'u') {
+			e.preventDefault();
+		}
+		// 禁用 F12 (开发者工具)
+		if (e.key === 'F12') {
+			e.preventDefault();
+		}
+		// 禁用 Ctrl+Shift+I (开发者工具)
+		if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+			e.preventDefault();
+		}
+		// 禁用 Ctrl+Shift+C (检查元素)
+		if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+			e.preventDefault();
+		}
+		// 禁用 Ctrl+Shift+J (JavaScript控制台)
+		if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+			e.preventDefault();
+		}
+	});
+	</script>
+
 
 </body>
 </html>
