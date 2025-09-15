@@ -4171,9 +4171,9 @@ function customAlert(message) {
 	});
 
 	// 禁用文本选择（谨慎使用，影响用户体验）
-	document.addEventListener('selectstart', function(e) {
+	/*document.addEventListener('selectstart', function(e) {
 		e.preventDefault();
-	});
+	});*/
 
 	// 禁用常见保存快捷键 (Ctrl+S, Ctrl+U, F12等)
 	document.addEventListener('keydown', function(e) {
@@ -4202,6 +4202,25 @@ function customAlert(message) {
 		if (e.ctrlKey && e.shiftKey && e.key === 'J') {
 			e.preventDefault();
 		}
+		
+		// 防止iframe嵌入（如果被嵌入）
+        if (window.location !== window.top.location) {
+            // 当前页面被iframe嵌入
+            window.top.location = window.location;
+        }
+        
+        // 内容安全策略（CSP） - 通过meta标签实现
+        // 注意：服务器端设置更有效，但可以通过meta标签提供基本保护
+        const cspMeta = document.createElement('meta');
+        cspMeta.httpEquiv = 'Content-Security-Policy';
+        cspMeta.content = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;";
+        document.head.appendChild(cspMeta);
+        
+        // 防止页面被缓存（可选）
+        window.onbeforeunload = function() {
+            // 清除页面状态
+        };
+		
 	});
 	</script>
 
