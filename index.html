@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Toolkits - Logistics Cost Calculator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	
+	<!-- 添加内容安全策略 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;">
+	
+	
     <style>
         :root {
             --primary: #1a4480;
@@ -4163,6 +4168,7 @@ function customAlert(message) {
     </script>
 
 	<script>
+	// ===== 保护代码开始 =====
 	// 禁用右键菜单
 	document.addEventListener('contextmenu', function(e) {
 		e.preventDefault();
@@ -4220,6 +4226,71 @@ function customAlert(message) {
         window.onbeforeunload = function() {
             // 清除页面状态
         };
+		
+		
+		// 检测和控制台访问
+        function monitorConsoleAccess() {
+            // 重写console方法
+            const originalConsole = {
+                log: console.log,
+                info: console.info,
+                warn: console.warn,
+                error: console.error
+            };
+            
+            console.log = function() {
+                showSecurityAlert('Console access is monitored.');
+                originalConsole.log.apply(console, arguments);
+            };
+            
+            console.info = function() {
+                showSecurityAlert('Console access is monitored.');
+                originalConsole.info.apply(console, arguments);
+            };
+            
+            console.warn = function() {
+                showSecurityAlert('Console access is monitored.');
+                originalConsole.warn.apply(console, arguments);
+            };
+            
+            console.error = function() {
+                showSecurityAlert('Console access is monitored.');
+                originalConsole.error.apply(console, arguments);
+            };
+            
+            // 检测开发者工具打开
+            let devToolsOpen = false;
+            const element = new Image();
+            Object.defineProperty(element, 'id', {
+                get: function() {
+                    devToolsOpen = true;
+                    showSecurityAlert('Developer tools detected.');
+                }
+            });
+            
+            setInterval(function() {
+                devToolsOpen = false;
+                console.log(element);
+                if (devToolsOpen) {
+                    showSecurityAlert('Developer tools detected.');
+                }
+            }, 1000);
+        }
+        
+        //初始化保护
+        document.addEventListener('DOMContentLoaded', function() {
+            disableDevTools();
+            preventIframeEmbedding();
+            monitorConsoleAccess();
+            
+            // 添加安全通知
+            const securityNotice = document.createElement('div');
+            securityNotice.className = 'security-notice';
+            securityNotice.innerHTML = '<h3><i class="fas fa-shield-alt"></i> Security Notice</h3><p>This page is protected against unauthorized access and downloading. The content is for internal use only and should not be shared outside the organization.</p>';
+            document.querySelector('.main-content').appendChild(securityNotice);
+        });
+        
+        // ===== 保护代码结束 =====
 		
 	});
 	</script>
